@@ -127,12 +127,18 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password'
 };
 
-exports.Prisma.ItemScalarFieldEnum = {
+exports.Prisma.TeamScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  image: 'image',
-  userId: 'userId'
+  image: 'image'
+};
+
+exports.Prisma.UserOnTeamScalarFieldEnum = {
+  userId: 'userId',
+  teamId: 'teamId',
+  role: 'role',
+  joinedAt: 'joinedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -153,7 +159,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Item: 'Item'
+  Team: 'Team',
+  UserOnTeam: 'UserOnTeam'
 };
 
 /**

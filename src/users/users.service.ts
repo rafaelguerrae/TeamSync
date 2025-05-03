@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/database/prisma.service';
 import { hash } from 'bcryptjs';
+import { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class UsersService {
@@ -11,27 +17,117 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const encryptedPassword = await hash(createUserDto.password, 10);
 
-
-    const userCreated = this.prisma.user.create(
-      { 
-        data: {...createUserDto , password: encryptedPassword}
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: createUserDto.email,
+          name: createUserDto.name,
+          password: encryptedPassword,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        },
       });
-    return userCreated;
+      return user;
+    } catch (error) {
+      // PrismaClientKnownRequestError has the shape { code: string, meta?: any, ... }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002' &&
+        (error.meta?.target as string[]).includes('email')
+      ) {
+        throw new ConflictException('A user with that email already exists');
+      }
+      // rethrow anything else as a 500
+      throw new InternalServerErrorException();
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    // Ensure user exists
+    await this.findOne(id);
+
+    const data: Prisma.UserUpdateInput = {
+      email: updateUserDto.email,
+      name: updateUserDto.name,
+    };
+
+    if (updateUserDto.password) {
+      data.password = await hash(updateUserDto.password, 10);
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    // Ensure user exists
+    await this.findOne(id);
+
+    const deleted = await this.prisma.user.delete({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    return deleted;
+  }
+
+  async getUserTeams(userId: number) {
+    await this.ensureUserExists(userId);
+    return this.prisma.userOnTeam.findMany({
+      where: { userId },
+      include: {
+        team: {
+          select: { id: true, name: true, description: true, image: true },
+        },
+      },
+    });
+  }
+  
+  private async ensureUserExists(userId: number) {
+    const exists = await this.prisma.user.count({ where: { id: userId } });
+    if (!exists) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
   }
 }
