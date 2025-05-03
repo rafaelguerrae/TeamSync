@@ -1,18 +1,20 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node", // Ensure Node.js module resolution
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true, // Add this for better CommonJS compatibility
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
+    "strict": true, // Enable strict mode for better type safety
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
