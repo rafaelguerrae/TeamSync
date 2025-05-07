@@ -1,3 +1,6 @@
+# Prisma generated client
+/generated
+
 # compiled output
 /dist
 /node_modules
@@ -46,13 +49,16 @@ lerna-debug.log*
 .temp
 .tmp
 
+# Environment files
+.env
+.env.*
+!.env.example
+
 # Runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
-
-/generated
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

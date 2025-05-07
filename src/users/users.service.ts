@@ -21,13 +21,17 @@ export class UsersService {
       const user = await this.prisma.user.create({
         data: {
           email: createUserDto.email,
+          alias: createUserDto.alias,
           name: createUserDto.name,
           password: encryptedPassword,
+          image: createUserDto.image,
         },
         select: {
           id: true,
+          alias: true,
           email: true,
           name: true,
+          image: true,
         },
       });
       return user;
@@ -49,8 +53,10 @@ export class UsersService {
     return this.prisma.user.findMany({
       select: {
         id: true,
+        alias: true,
         email: true,
         name: true,
+        image: true,
       },
     });
   }
@@ -60,8 +66,10 @@ export class UsersService {
       where: { id },
       select: {
         id: true,
+        alias: true,
         email: true,
         name: true,
+        image: true,
       },
     });
     if (!user) {
@@ -76,7 +84,9 @@ export class UsersService {
 
     const data: Prisma.UserUpdateInput = {
       email: updateUserDto.email,
+      alias: updateUserDto.alias,
       name: updateUserDto.name,
+      image: updateUserDto.image,
     };
 
     if (updateUserDto.password) {
@@ -88,8 +98,10 @@ export class UsersService {
       data,
       select: {
         id: true,
+        alias: true,
         email: true,
         name: true,
+        image: true,
       },
     });
 
@@ -104,8 +116,10 @@ export class UsersService {
       where: { id },
       select: {
         id: true,
+        alias: true,
         email: true,
         name: true,
+        image: true,
       },
     });
 
@@ -116,11 +130,19 @@ export class UsersService {
     await this.ensureUserExists(userId);
     return this.prisma.userOnTeam.findMany({
       where: { userId },
-      include: {
+      select: {
+        role: true,
+        joinedAt: true,
         team: {
-          select: { id: true, name: true, description: true, image: true },
-        },
-      },
+          select: {
+            id: true,
+            alias: true,
+            name: true,
+            description: true,
+            image: true
+          }
+        }
+      }
     });
   }
   

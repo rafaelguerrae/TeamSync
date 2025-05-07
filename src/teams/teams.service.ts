@@ -20,6 +20,7 @@ export class TeamsService {
         },
         select: {
           id: true,
+          alias: true,
           name: true,
           description: true,
           image: true,
@@ -35,6 +36,7 @@ export class TeamsService {
     return this.prisma.team.findMany({
       select: {
         id: true,
+        alias: true,
         name: true,
         description: true,
         image: true,
@@ -47,6 +49,7 @@ export class TeamsService {
       where: { id },
       select: {
         id: true,
+        alias: true,
         name: true,
         description: true,
         image: true,
@@ -70,6 +73,7 @@ export class TeamsService {
       data,
       select: {
         id: true,
+        alias: true,
         name: true,
         description: true,
         image: true,
@@ -84,6 +88,7 @@ export class TeamsService {
       where: { id },
       select: {
         id: true,
+        alias: true,
         name: true,
         description: true,
         image: true,
@@ -96,11 +101,19 @@ export class TeamsService {
     await this.findOne(teamId);
     return this.prisma.userOnTeam.findMany({
       where: { teamId },
-      include: {
+      select: {
+        role: true,
+        joinedAt: true,
         user: {
-          select: { id: true, email: true, name: true },
-        },
-      },
+          select: {
+            id: true,
+            alias: true,
+            email: true,
+            name: true,
+            image: true
+          }
+        }
+      }
     });
   }
 

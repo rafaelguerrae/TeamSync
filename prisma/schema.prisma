@@ -10,15 +10,18 @@ datasource db {
 
 model User {
   id        Int              @id @default(autoincrement())
+  alias     String?          @unique
   email     String           @unique
   name      String?
   password  String
+  image     String           @db.Text
 
   memberships UserOnTeam[]
 }
 
 model Team {
   id          Int              @id @default(autoincrement())
+  alias       String?          @unique
   name        String
   description String?
   image       String           @db.Text
