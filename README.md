@@ -1,29 +1,157 @@
+# Team Management API
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://www.prisma.io/" target="_blank"><img src="https://prismalens.vercel.app/header/logo-dark.svg" width="120" alt="Prisma Logo" /></a>
 </p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A RESTful API built with NestJS and Prisma for managing users and teams with role-based access control.
+
+## Features
+
+- User management (CRUD operations)
+- Team management (CRUD operations)
+- Role-based access control
+- User authentication (JWT)
+- Team membership management
+- Profile images support
+- Unique aliases for users and teams
+
+## Prerequisites
+
+- Node.js (v16 or later)
+- npm or yarn
+- PostgreSQL database
+- Prisma CLI (installed via npm/yarn)
+
+## Project Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd nest-js-crud
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Update the `.env` file with your database credentials and other settings.
+
+4. **Set up database**
+   ```bash
+   # Run database migrations
+   npx prisma migrate dev
+   
+   # Generate Prisma client
+   npx prisma generate
+   ```
+
+5. **Start the application**
+   ```bash
+   # Development
+   npm run start:dev
+   
+   # Production
+   npm run build
+   npm run start:prod
+   ```
+
+## API Documentation
+
+Once the application is running, you can access the API documentation at:
+- Swagger UI: `http://localhost:3000/api`
+- JSON Schema: `http://localhost:3000/api-json`
+
+## Development
+
+### Prisma
+
+- After making changes to `schema.prisma`, run:
+  ```bash
+  npx prisma generate
+  npx prisma migrate dev --name your_migration_name
+  ```
+
+### Testing
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
+```
+
+## Data Model
+
+```mermaid
+erDiagram
+    User ||--o{ UserOnTeam : "has many"
+    Team ||--o{ UserOnTeam : "has many"
+    
+    User {
+        Int id
+        String? alias
+        String email
+        String? name
+        String password
+        String image
+    }
+    
+    Team {
+        Int id
+        String? alias
+        String name
+        String? description
+        String image
+    }
+    
+    UserOnTeam {
+        Int userId
+        Int teamId
+        String role
+        DateTime joinedAt
+    }
+```
+
+## Project Structure
+
+```
+src/
+├── app.controller.ts          # Root controller
+├── app.module.ts             # Root module
+├── app.service.ts            # Root service
+├── main.ts                   # Application entry point
+├── database/                 # Database configuration
+├── users/                    # User module
+│   ├── dto/                  # Data transfer objects
+│   ├── entities/             # TypeScript interfaces/types
+│   ├── users.controller.ts   # User endpoints
+│   ├── users.module.ts       # User module definition
+│   └── users.service.ts      # User business logic
+├── teams/                    # Team module
+│   ├── dto/                  # Data transfer objects
+│   ├── entities/             # TypeScript interfaces/types
+│   ├── teams.controller.ts   # Team endpoints
+│   ├── teams.module.ts       # Team module definition
+│   └── teams.service.ts      # Team business logic
+└── shared/                   # Shared utilities and types
+```
+
+## License
+
+This project is [MIT licensed](LICENSE).
 
 ## Project setup
 
