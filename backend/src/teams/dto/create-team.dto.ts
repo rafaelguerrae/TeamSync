@@ -7,6 +7,12 @@ export class CreateTeamDto {
   @IsNotEmpty()
   name!: string;
 
+  
+  @ApiProperty({ description: 'Alias of the team' })
+  @IsString()
+  @IsNotEmpty()
+  alias!: string;
+
   @ApiProperty({ description: 'Description of the team', required: false })
   @IsString()
   @IsOptional()

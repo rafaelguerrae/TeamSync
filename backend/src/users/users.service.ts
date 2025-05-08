@@ -36,7 +36,6 @@ export class UsersService {
       });
       return user;
     } catch (error) {
-      // PrismaClientKnownRequestError has the shape { code: string, meta?: any, ... }
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002' &&

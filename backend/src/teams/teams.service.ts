@@ -65,6 +65,7 @@ export class TeamsService {
     await this.findOne(id);
     const data: any = {
       name: updateTeamDto.name,
+      alias: updateTeamDto.alias,
       description: updateTeamDto.description,
       image: updateTeamDto.image,
     };

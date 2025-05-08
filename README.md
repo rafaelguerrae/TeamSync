@@ -2,7 +2,6 @@
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-  <a href="https://www.prisma.io/" target="_blank"><img src="https://prismalens.vercel.app/header/logo-dark.svg" width="120" alt="Prisma Logo" /></a>
 </p>
 
 ## Description
@@ -30,7 +29,7 @@ A RESTful API built with NestJS and Prisma for managing users and teams with rol
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/rafaelguerrae/nest-js-crud
    cd nest-js-crud
    ```
 
@@ -102,18 +101,18 @@ erDiagram
     
     User {
         Int id
-        String? alias
+        String alias
         String email
-        String? name
+        String name
         String password
         String image
     }
     
     Team {
         Int id
-        String? alias
+        String alias
         String name
-        String? description
+        String description
         String image
     }
     
