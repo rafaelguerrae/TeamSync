@@ -9,11 +9,13 @@ import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup-user.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SignInUserDto } from './dto/signin-user.dto';
+import { Public } from 'src/public-route';
 
 @Controller('')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('signup')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: SignUpUserDto })
@@ -24,6 +26,7 @@ export class AuthController {
     return await this.authService.signUp(signUpUserDto);
   }
 
+  @Public()
   @Post('signin')
   @ApiOperation({ summary: 'Sign in a user' })
   @ApiBody({ type: SignInUserDto })
