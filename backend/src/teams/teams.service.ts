@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { Prisma } from 'generated/prisma';
@@ -28,10 +33,10 @@ export class TeamsService {
       });
       return team;
     } catch (err) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(err);
     }
   }
-  
+
   async findAll() {
     return this.prisma.team.findMany({
       select: {
@@ -63,15 +68,16 @@ export class TeamsService {
 
   async update(id: number, updateTeamDto: UpdateTeamDto) {
     await this.findOne(id);
-    const data: any = {
-      name: updateTeamDto.name,
-      alias: updateTeamDto.alias,
-      description: updateTeamDto.description,
-      image: updateTeamDto.image,
-    };
+
     const updated = await this.prisma.team.update({
       where: { id },
-      data,
+      // TypeScript will infer `data`'s type from Prisma’s `.update()` signature
+      data: {
+        name: updateTeamDto.name,
+        alias: updateTeamDto.alias,
+        description: updateTeamDto.description,
+        image: updateTeamDto.image,
+      },
       select: {
         id: true,
         alias: true,
@@ -96,7 +102,7 @@ export class TeamsService {
       },
     });
     return deleted;
-  }  
+  }
 
   async getTeamUsers(teamId: number) {
     await this.findOne(teamId);
@@ -111,10 +117,10 @@ export class TeamsService {
             alias: true,
             email: true,
             name: true,
-            image: true
-          }
-        }
-      }
+            image: true,
+          },
+        },
+      },
     });
   }
 
@@ -141,10 +147,7 @@ export class TeamsService {
     }
   }
 
-  async updateUserRole(
-    teamId: number,
-    dto: UpdateUserRoleDto
-  ) {
+  async updateUserRole(teamId: number, dto: UpdateUserRoleDto) {
     const userId = dto.userId;
     await this.prisma.userOnTeam.findUniqueOrThrow({
       where: { userId_teamId: { userId, teamId } },

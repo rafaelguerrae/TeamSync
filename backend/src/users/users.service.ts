@@ -138,13 +138,13 @@ export class UsersService {
             alias: true,
             name: true,
             description: true,
-            image: true
-          }
-        }
-      }
+            image: true,
+          },
+        },
+      },
     });
   }
-  
+
   private async ensureUserExists(userId: number) {
     const exists = await this.prisma.user.count({ where: { id: userId } });
     if (!exists) {

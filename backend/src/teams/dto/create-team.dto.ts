@@ -7,7 +7,6 @@ export class CreateTeamDto {
   @IsNotEmpty()
   name!: string;
 
-  
   @ApiProperty({ description: 'Alias of the team' })
   @IsString()
   @IsNotEmpty()
@@ -18,7 +17,10 @@ export class CreateTeamDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ description: 'Image URL or text for the team', required: false })
+  @ApiProperty({
+    description: 'Image URL or text for the team',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   image!: string;

@@ -79,7 +79,7 @@ export class TeamsController {
   @ApiResponse({ status: 409, description: 'Already a member.' })
   async addUserToTeam(
     @Param('teamId', ParseIntPipe) id: number,
-    @Body() dto: AddUserToTeamDto
+    @Body() dto: AddUserToTeamDto,
   ) {
     return await this.teamsService.addUserToTeam(id, dto);
   }
@@ -94,14 +94,14 @@ export class TeamsController {
 
   @Patch(':teamId/members')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  @ApiOperation({ summary: 'Update a user\'s role in a team' })
+  @ApiOperation({ summary: "Update a user's role in a team" })
   @ApiParam({ name: 'teamId', type: Number })
   @ApiParam({ name: 'userId', type: Number })
   @ApiBody({ type: UpdateUserRoleDto })
   @ApiResponse({ status: 200, description: 'Role updated.' })
   async updateUserRole(
     @Param('teamId', ParseIntPipe) teamId: number,
-    @Body() dto: UpdateUserRoleDto
+    @Body() dto: UpdateUserRoleDto,
   ) {
     return await this.teamsService.updateUserRole(teamId, dto);
   }
