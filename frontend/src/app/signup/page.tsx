@@ -10,21 +10,22 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 
 export default function SignUp() {
   const [name, setName] = useState("");
+  const [alias, setAlias] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle sign up logic here
-    console.log({ name, email, password });
+    console.log({ name, alias, email, password });
   };
 
   return (
-    <div className="hero-gradient min-h-screen p-4 sm:p-8 flex flex-col">
+    <div className="hero-gradient min-h-screen px-8 sm:px-8 flex flex-col">
       <div className="flex w-full justify-between items-center mb-6">
         <Link href="/">
           <Image
-            className="invert"
+            className="dark:invert"
             src="/nesxt.svg"
             alt="Nesxt.js logo"
             width={100}
@@ -41,7 +42,7 @@ export default function SignUp() {
             <CardTitle className="text-center">Create Account</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium leading-none">
                   Full Name
@@ -51,6 +52,19 @@ export default function SignUp() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="alias" className="text-sm font-medium leading-none">
+                  Alias
+                </label>
+                <Input
+                  id="alias"
+                  type="text"
+                  value={alias}
+                  onChange={(e) => setAlias(e.target.value)}
                   required
                 />
               </div>
@@ -89,7 +103,7 @@ export default function SignUp() {
           <CardFooter className="flex justify-center">
             <div className="text-sm text-center">
               Already have an account?{" "}
-              <Link href="/signin" className="text-primary hover:underline">
+              <Link href="/signin" className="text-primary hover:underline font-bold">
                 Sign in
               </Link>
             </div>

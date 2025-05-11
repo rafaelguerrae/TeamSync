@@ -19,11 +19,11 @@ export default function SignIn() {
   };
 
   return (
-    <div className="hero-gradient min-h-screen p-4 sm:p-8 flex flex-col">
+    <div className="hero-gradient min-h-screen px-8 flex flex-col">
       <div className="flex w-full justify-between items-center mb-6">
         <Link href="/">
           <Image
-            className="invert"
+            className="dark:invert"
             src="/nesxt.svg"
             alt="Nesxt.js logo"
             width={100}
@@ -40,11 +40,13 @@ export default function SignIn() {
             <CardTitle className="text-center">Sign In</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-8">
+
+              <div className="space-y-8">
                 <label htmlFor="email" className="text-sm font-medium leading-none">
                   Email
                 </label>
+
                 <Input
                   id="email"
                   type="email"
@@ -75,7 +77,7 @@ export default function SignIn() {
           <CardFooter className="flex justify-center">
             <div className="text-sm text-center">
               Don't have an account?{" "}
-              <Link href="/signup" className="text-primary hover:underline">
+              <Link href="/signup" className="text-primary hover:underline font-bold">
                 Sign up
               </Link>
             </div>

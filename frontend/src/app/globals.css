@@ -126,6 +126,9 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -146,17 +149,21 @@ nextjs-portal {
 
 /* Gradient backgrounds */
 .hero-gradient {
-  background: linear-gradient(135deg, #0a0a0a 0%, #0f172a 35%, #1e40af 100%);
+  @apply bg-gray-50;
+  background: linear-gradient(135deg, rgb(249 250 251) 0%, rgb(243 244 246) 50%, rgb(229 231 235) 100%);
 }
 
 .dark .hero-gradient {
-  background: linear-gradient(135deg, #000000 0%, #0f172a 40%, #1e3a8a 100%);
+  @apply bg-gray-900;
+  background: linear-gradient(135deg, rgb(17 24 39) 0%, rgb(31 41 55) 50%, rgb(55 65 81) 100%);
 }
 
 .cta-gradient {
-  background: linear-gradient(135deg, #0a0a0a 0%, #0f172a 35%, #1e40af 100%);
+  @apply bg-gray-50;
+  background: linear-gradient(135deg, rgb(249 250 251) 0%, rgb(243 244 246) 50%, rgb(229 231 235) 100%);
 }
 
 .dark .cta-gradient {
-  background: linear-gradient(135deg, #000000 0%, #0f172a 40%, #1e3a8a 100%);
+  @apply bg-gray-900;
+  background: linear-gradient(135deg, rgb(17 24 39) 0%, rgb(31 41 55) 50%, rgb(55 65 81) 100%);
 }

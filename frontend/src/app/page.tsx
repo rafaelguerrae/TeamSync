@@ -11,16 +11,18 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <header className="border-b sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/nesxt.svg"
-              alt="Nesxt.js logo"
-              width={100}
-              height={24}
-              className="dark:invert"
-              priority
-            />
+        <div className="container mx-auto px-8 flex justify-between items-center">
+          <div className="flex items-center">
+            <Link  href="#hero" className="hover:opacity-80">
+              <Image
+                src="/nesxt.svg"
+                alt="Nesxt.js logo"
+                width={100}
+                height={24}
+                className="dark:invert"
+                priority
+              />
+            </Link>
           </div>
           
           <div className="flex items-center gap-3">
@@ -36,20 +38,20 @@ export default function LandingPage() {
       </header>
 
       {/* Hero section */}
-      <section className="py-16 md:py-24 hero-gradient text-white">
+      <section id="hero" className="py-16 md:py-24 hero-gradient">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
             NestJS + NextJS CRUD Application
           </h1>
-          <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-300">
+          <p className="text-xl mb-8 max-w-3xl mx-auto text-muted-foreground">
             A modern, type-safe, and scalable solution for building full-stack applications
             with seamless data management.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild>
+            <Button size="lg" variant="default" asChild>
               <Link href="/signup">Get Started</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="bg-transparent border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" asChild>
               <Link href="#features">Learn More</Link>
             </Button>
           </div>
@@ -155,13 +157,13 @@ export default function LandingPage() {
       </section>
 
       {/* CTA section */}
-      <section className="py-16 cta-gradient text-white">
+      <section className="py-16 cta-gradient">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-300">
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Ready to Get Started?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-muted-foreground">
             Sign up now and start managing your data with our powerful CRUD application.
           </p>
-          <Button size="lg" variant="secondary" asChild>
+          <Button size="lg" variant="default" asChild>
             <Link href="/signup">Create Account</Link>
           </Button>
         </div>
@@ -172,13 +174,16 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
+            <Link  href="#hero" className="hover:opacity-80">
               <Image
                 src="/nesxt.svg"
                 alt="Nesxt.js logo"
                 width={80}
                 height={20}
                 className="dark:invert"
+                priority
               />
+            </Link>
               <span className="ml-2 text-sm text-muted-foreground">© 2025 Rafael Guerra</span>
             </div>
             <div className="flex gap-6 items-center">
