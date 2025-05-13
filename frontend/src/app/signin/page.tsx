@@ -2,26 +2,65 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { api } from "@/lib/api";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignIn() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if user was redirected from signup page
+  useEffect(() => {
+    const registered = searchParams.get("registered");
+    if (registered === "true") {
+      setSuccess("Account created successfully! Please sign in with your credentials.");
+    }
+  }, [searchParams]);
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log({ email, password });
+    setError("");
+    setSuccess("");
+    
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      const response = await api.signIn(email, password);
+      
+      // Successfully signed in, redirect to dashboard
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Sign in error:", err);
+      setError(err instanceof Error ? err.message : "Failed to sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
     <div className="hero-gradient min-h-screen px-8 flex flex-col">
       <div className="flex w-full justify-between items-center mb-6">
-        <Link href="/">
+        <Link href="/" className="hover:opacity-80">
           <Image
             className="dark:invert"
             src="/nesxt.svg"
@@ -36,13 +75,21 @@ export default function SignIn() {
       
       <main className="flex flex-col w-full max-w-md mx-auto my-auto">
         <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-center">Sign In</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-8">
+            {error && (
+              <div className="mb-4 p-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="mb-4 p-2 bg-green-50 border border-green-200 text-green-600 text-sm rounded">
+                {success}
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-8">
-
-              <div className="space-y-8">
+              <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium leading-none">
                   Email
                 </label>
@@ -52,6 +99,7 @@ export default function SignIn() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -60,17 +108,33 @@ export default function SignIn() {
                 <label htmlFor="password" className="text-sm font-medium leading-none">
                   Password
                 </label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:cursor-pointer"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               
-              <Button type="submit" className="w-full">
-                Sign in
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </CardContent>

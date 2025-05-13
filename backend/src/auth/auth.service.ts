@@ -55,6 +55,14 @@ export class AuthService {
   async signIn(signInUserDto: SignInUserDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: signInUserDto.email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        alias: true,
+        image: true,
+        password: true,
+      }
     });
 
     if (!user) {
@@ -71,6 +79,13 @@ export class AuthService {
     }
 
     const payload = { username: user.email, sub: user.id };
-    return { accessToken: await this.jwtService.signAsync(payload) };
+    
+    // Create a user object without the password
+    const { password, ...userWithoutPassword } = user;
+    
+    return { 
+      accessToken: await this.jwtService.signAsync(payload),
+      user: userWithoutPassword
+    };
   }
 }

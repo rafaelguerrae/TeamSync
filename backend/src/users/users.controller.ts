@@ -11,11 +11,13 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +31,17 @@ export class UsersController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
+  }
+
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the profile of currently authenticated user' })
+  @ApiResponse({ status: 200, description: 'Current user profile.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  async getProfile(@Req() request: Request) {
+    // The user ID is available from the JWT payload in the request
+    // It was set by the AuthGuard
+    return await this.usersService.findOne(Number(request.user.sub));
   }
 
   @Get()
