@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 export default function CreateTeamPage() {
   const router = useRouter();
@@ -41,14 +41,26 @@ export default function CreateTeamPage() {
     try {
       setLoading(true);
       
-      const team = await api.createTeam({
+      // Create a clean payload, only including alias if it has a value
+      const payload: {
+        name: string;
+        description?: string;
+        image: string;
+        alias?: string;
+      } = {
         name: formData.name,
-        alias: formData.alias || undefined,
         description: formData.description || undefined,
         image: formData.image,
-      });
+      };
       
-      // Redirect to the team page
+      // Only add alias if it's not empty
+      if (formData.alias.trim()) {
+        payload.alias = formData.alias.trim();
+      }
+      
+      const team = await apiClient.createTeam(payload);
+      
+      // Redirect to the team page - fix the path to match the API structure
       router.push(`/dashboard/teams/${team.id}`);
     } catch (err) {
       console.error('Error creating team:', err);

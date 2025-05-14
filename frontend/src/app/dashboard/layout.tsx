@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { authApi } from "@/lib/auth";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -52,8 +52,8 @@ export default function DashboardLayout({
   useEffect(() => {
     async function checkAuth() {
       try {
-        // Try to get the current user - this will fail if not authenticated
-        await api.getCurrentUser();
+        // Try to get the current user - this will handle token refresh if needed
+        await authApi.getCurrentUser();
         setIsLoading(false);
       } catch (error) {
         // Not authenticated, redirect to signin
@@ -151,8 +151,8 @@ export default function DashboardLayout({
             isMinimized && "w-full flex justify-center"
           )}>
             <button 
-              onClick={() => {
-                api.signOut();
+              onClick={async () => {
+                await authApi.signOut();
                 router.push('/signin');
               }}
               className={cn(

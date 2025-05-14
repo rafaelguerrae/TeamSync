@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { api, User, TeamMembership } from '@/lib/api';
+import { User, TeamMembership } from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 export default function TeamsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,10 +15,10 @@ export default function TeamsPage() {
     async function loadTeams() {
       try {
         setLoading(true);
-        const userData = await api.getCurrentUser();
+        const userData = await apiClient.getCurrentUser();
         setUser(userData);
         
-        const userTeams = await api.getUserTeams(userData.id);
+        const userTeams = await apiClient.getUserTeams(userData.id);
         setTeams(userTeams);
         
         setError(null);

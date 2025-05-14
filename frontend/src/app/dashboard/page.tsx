@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { api, User, TeamMembership } from '@/lib/api';
+import { User, TeamMembership } from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,10 +15,10 @@ export default function DashboardPage() {
     async function loadDashboardData() {
       try {
         setLoading(true);
-        const currentUser = await api.getCurrentUser();
+        const currentUser = await apiClient.getCurrentUser();
         setUser(currentUser);
         
-        const userTeams = await api.getUserTeams(currentUser.id);
+        const userTeams = await apiClient.getUserTeams(currentUser.id);
         setTeams(userTeams);
         
         setError(null);

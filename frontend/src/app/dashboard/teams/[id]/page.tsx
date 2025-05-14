@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { api, Team, TeamMember, User } from '@/lib/api';
+import { Team, TeamMember, User } from '@/lib/api';
+import { apiClient } from '@/lib/api-client';
 
 export default function TeamDetailPage() {
   const params = useParams();
@@ -26,15 +27,15 @@ export default function TeamDetailPage() {
         setLoading(true);
         
         // Load current user
-        const user = await api.getCurrentUser();
+        const user = await apiClient.getCurrentUser();
         setCurrentUser(user);
         
         // Load team details
-        const teamData = await api.getTeam(teamId);
+        const teamData = await apiClient.getTeam(teamId);
         setTeam(teamData);
         
         // Load team members
-        const teamMembers = await api.getTeamMembers(teamId);
+        const teamMembers = await apiClient.getTeamMembers(teamId);
         setMembers(teamMembers);
         
         // Find current user's role in this team
@@ -64,7 +65,7 @@ export default function TeamDetailPage() {
     
     try {
       setIsDeleting(true);
-      await api.deleteTeam(teamId);
+      await apiClient.deleteTeam(teamId);
       router.push('/dashboard/teams');
     } catch (err) {
       console.error('Error deleting team:', err);
@@ -248,7 +249,7 @@ export default function TeamDetailPage() {
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
                         onClick={() => {
                           if (confirm(`Remove ${member.user.name || member.user.email} from this team?`)) {
-                            api.removeTeamMember(teamId, member.user.id)
+                            apiClient.removeTeamMember(teamId, member.user.id)
                               .then(() => {
                                 setMembers(members.filter(m => m.user.id !== member.user.id));
                               })

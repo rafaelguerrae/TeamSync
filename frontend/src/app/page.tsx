@@ -11,13 +11,13 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <header className="border-b sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-8 flex justify-between items-center">
+        <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
             <Link  href="#hero" className="hover:opacity-80">
               <Image
                 src="/nesxt.svg"
                 alt="Nesxt.js logo"
-                width={100}
+                width={80}
                 height={24}
                 className="dark:invert"
                 priority
