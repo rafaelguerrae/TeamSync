@@ -12,8 +12,9 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -42,6 +43,19 @@ export class UsersController {
     // The user ID is available from the JWT payload in the request
     // It was set by the AuthGuard
     return await this.usersService.findOne(Number(request.user.sub));
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search users by username, email or alias' })
+  @ApiQuery({ 
+    name: 'query', 
+    type: String, 
+    description: 'Search query to match against username, email or alias', 
+    required: true 
+  })
+  @ApiResponse({ status: 200, description: 'List of matching users.' })
+  async searchUsers(@Query('query') query: string) {
+    return this.usersService.searchUsers(query);
   }
 
   @Get()

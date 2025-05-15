@@ -177,22 +177,22 @@ export const api = {
     }),
     
   getTeamMembers: (teamId: number) => 
-    request<TeamMember[]>(`/teams/${teamId}/users`),
+    request<TeamMember[]>(`/teams/${teamId}/members`),
     
   addTeamMember: (teamId: number, userId: number, role: string) => 
-    request<{ userId: number; teamId: number; role: string }>(`/teams/${teamId}/users`, {
+    request<{ userId: number; teamId: number; role: string }>(`/teams/${teamId}/members`, {
       method: 'POST',
       body: JSON.stringify({ userId, role }),
     }),
     
   updateMemberRole: (teamId: number, userId: number, role: string) => 
-    request<{ userId: number; teamId: number; role: string }>(`/teams/${teamId}/users/role`, {
+    request<{ userId: number; teamId: number; role: string }>(`/teams/${teamId}/members`, {
       method: 'PATCH',
       body: JSON.stringify({ userId, role }),
     }),
     
   removeTeamMember: (teamId: number, userId: number) => 
-    request<void>(`/teams/${teamId}/users/${userId}`, {
+    request<void>(`/teams/${teamId}/members/${userId}`, {
       method: 'DELETE',
     }),
 }; 

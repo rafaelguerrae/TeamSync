@@ -102,6 +102,27 @@ export const authApi = {
     
     return { user: data.user };
   },
+
+  signUp: async(name: string, alias: string, email: string, password: string, image: string): Promise<{ user: User }> => {
+    const response = await fetch(`${API_BASE_URL}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, alias, email, password, image }),
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Signup failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Signup successful, storing access token');
+
+    return { user: data.user };
+  },
   
   signOut: async (): Promise<void> => {
     // Clear in-memory token

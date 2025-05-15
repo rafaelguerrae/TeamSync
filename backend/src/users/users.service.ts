@@ -145,6 +145,26 @@ export class UsersService {
     });
   }
 
+  async searchUsers(username: string) {
+    return this.prisma.user.findMany({
+      where: {
+        OR: [
+          { name: { contains: username, mode: 'insensitive' } },
+          { email: { contains: username, mode: 'insensitive' } },
+          { alias: { contains: username, mode: 'insensitive' } },
+        ],
+      },
+      select: {
+        id: true,
+        alias: true,
+        email: true,
+        name: true,
+        image: true,
+      },
+      take: 10, // Limit to 10 results
+    });
+  }
+
   private async ensureUserExists(userId: number) {
     const exists = await this.prisma.user.count({ where: { id: userId } });
     if (!exists) {

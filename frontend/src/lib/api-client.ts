@@ -62,6 +62,9 @@ export const apiClient = {
   getUserTeams: (userId: number) => 
     request<TeamMembership[]>(`/users/${userId}/teams`),
   
+  searchUsers: (query: string) =>
+    request<User[]>(`/users/search?query=${encodeURIComponent(query)}`),
+  
   // Teams
   getTeams: () => 
     request<Team[]>('/teams'),

@@ -70,7 +70,7 @@ export class TeamsController {
     await this.teamsService.remove(id);
   }
 
-  @Post(':teamId')
+  @Post(':teamId/members')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Add a user to a team with a role' })
   @ApiParam({ name: 'teamId', type: Number })

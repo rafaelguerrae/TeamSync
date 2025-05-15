@@ -48,24 +48,7 @@ export default function SignUp() {
       const image = getDefaultAvatarUrl(name);
       
       // Sign up the user using the fetch API directly since authApi doesn't have signUp
-      const response = await fetch('http://localhost:3000/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name,
-          alias,
-          email,
-          password,
-          image
-        })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Signup failed: ${response.status}`);
-      }
+      const response = await authApi.signUp(name, alias, email, password, image);
       
       // On successful signup, redirect to signin page
       router.push("/signin?registered=true");
