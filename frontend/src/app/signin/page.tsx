@@ -8,7 +8,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { authApi } from "@/lib/auth";
+import { api } from "@/lib/api";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignIn() {
@@ -39,9 +39,9 @@ export default function SignIn() {
       return;
     }
     
-    try {
+    try { 
       setIsLoading(true);
-      await authApi.signIn(email, password);
+      await api.auth.signIn(email, password);
       
       // Successfully signed in, redirect to dashboard
       router.push("/dashboard");

@@ -8,8 +8,8 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { authApi } from "@/lib/auth";
 import { Eye, EyeOff } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function SignUp() {
   const router = useRouter();
@@ -46,9 +46,17 @@ export default function SignUp() {
       
       // Generate an avatar URL based on the user's name
       const image = getDefaultAvatarUrl(name);
+
+      const userData = {
+        name,
+        alias,
+        email,
+        password,
+        image
+      };
       
       // Sign up the user using the fetch API directly since authApi doesn't have signUp
-      const response = await authApi.signUp(name, alias, email, password, image);
+      const response = await api.auth.signUp(userData);
       
       // On successful signup, redirect to signin page
       router.push("/signin?registered=true");

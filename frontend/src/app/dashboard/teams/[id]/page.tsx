@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Team, TeamMember, User } from '@/lib/api';
-import { apiClient } from '@/lib/api-client';
+import { Team, TeamMember, User, api } from '@/lib/api';
 
 export default function TeamDetailPage() {
   const params = useParams();
@@ -40,15 +39,15 @@ export default function TeamDetailPage() {
         setLoading(true);
         
         // Load current user
-        const user = await apiClient.getCurrentUser();
+        const user = await api.users.getCurrent();
         setCurrentUser(user);
         
         // Load team details
-        const teamData = await apiClient.getTeam(teamId);
+        const teamData = await api.teams.getOne(teamId);
         setTeam(teamData);
         
         // Load team members
-        const teamMembers = await apiClient.getTeamMembers(teamId);
+        const teamMembers = await api.teams.members.getAll(teamId);
         setMembers(teamMembers);
         
         // Find current user's role in this team
@@ -78,7 +77,7 @@ export default function TeamDetailPage() {
     
     try {
       setIsDeleting(true);
-      await apiClient.deleteTeam(teamId);
+      await api.teams.delete(teamId);
       router.push('/dashboard/teams');
     } catch (err) {
       console.error('Error deleting team:', err);
@@ -94,7 +93,7 @@ export default function TeamDetailPage() {
     try {
       setIsSearching(true);
       setAddMemberError(null);
-      const users = await apiClient.searchUsers(searchQuery);
+      const users = await api.users.search(searchQuery);
       
       // Filter out users that are already team members
       const existingMemberIds = members.map(member => member.user.id);
@@ -128,13 +127,13 @@ export default function TeamDetailPage() {
       
       // Add each selected user to the team
       const addPromises = selectedUsers.map(user => 
-        apiClient.addTeamMember(teamId, user.id, selectedRole)
+        api.teams.members.add(teamId, user.id, selectedRole)
       );
       
       await Promise.all(addPromises);
       
       // Reload team members
-      const teamMembers = await apiClient.getTeamMembers(teamId);
+      const teamMembers = await api.teams.members.getAll(teamId);
       setMembers(teamMembers);
       
       // Reset state and close modal
@@ -353,7 +352,7 @@ export default function TeamDetailPage() {
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
                         onClick={() => {
                           if (confirm(`Remove ${member.user.name || member.user.email} from this team?`)) {
-                            apiClient.removeTeamMember(teamId, member.user.id)
+                            api.teams.members.remove(teamId, member.user.id)
                               .then(() => {
                                 setMembers(members.filter(m => m.user.id !== member.user.id));
                               })

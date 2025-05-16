@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiClient } from '@/lib/api-client';
+import { api } from '@/lib/api';
 
 export default function CreateTeamPage() {
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function CreateTeamPage() {
         payload.alias = formData.alias.trim();
       }
       
-      const team = await apiClient.createTeam(payload);
+      const team = await api.teams.create(payload);
       
       // Redirect to the team page - fix the path to match the API structure
       router.push(`/dashboard/teams/${team.id}`);

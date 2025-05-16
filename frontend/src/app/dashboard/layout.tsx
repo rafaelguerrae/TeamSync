@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authApi } from "@/lib/auth";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
-
+import { api } from '@/lib/api';
 interface NavItemProps {
   href: string;
   children: React.ReactNode;
@@ -53,7 +51,7 @@ export default function DashboardLayout({
     async function checkAuth() {
       try {
         // Try to get the current user - this will handle token refresh if needed
-        await authApi.getCurrentUser();
+        await api.users.getCurrent();
         setIsLoading(false);
       } catch (error) {
         // Not authenticated, redirect to signin
@@ -152,7 +150,7 @@ export default function DashboardLayout({
           )}>
             <button 
               onClick={async () => {
-                await authApi.signOut();
+                await api.auth.signOut();
                 router.push('/signin');
               }}
               className={cn(

@@ -1,8 +1,7 @@
 'use client';
 
+import { api, User } from '@/lib/api';
 import { useState, useEffect, FormEvent } from 'react';
-import { User } from '@/lib/api';
-import { apiClient } from '@/lib/api-client';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -24,7 +23,7 @@ export default function ProfilePage() {
     async function loadProfile() {
       try {
         setLoading(true);
-        const userData = await apiClient.getCurrentUser();
+        const userData = await api.users.getCurrent();
         setUser(userData);
         
         // Initialize form with user data
@@ -90,7 +89,7 @@ export default function ProfilePage() {
         return;
       }
       
-      const updatedUser = await apiClient.updateUser(user!.id, updateData);
+      const updatedUser = await api.users.update(user!.id, updateData);
       setUser(updatedUser);
       
       // Reset password fields
