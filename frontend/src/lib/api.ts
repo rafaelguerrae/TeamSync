@@ -41,6 +41,7 @@ let accessToken: string | null = null;
 let accessTokenExpiryTime: number | null = null;
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
+let isRefreshingOnLoad = false;
 
 // Decode JWT without a library
 function decodeJwt(token: string): { sub: string; email: string; exp: number; [key: string]: any } | null {
@@ -98,6 +99,22 @@ const getHeaders = (customHeaders = {}): HeadersInit => {
   return headers;
 };
 
+// Try to refresh token on page load
+export function tryRefreshTokenOnLoad(): Promise<boolean> {
+  if (isRefreshingOnLoad) {
+    return refreshPromise || Promise.resolve(false);
+  }
+
+  if (hasValidAccessToken()) {
+    return Promise.resolve(true);
+  }
+
+  isRefreshingOnLoad = true;
+  return refreshToken().finally(() => {
+    isRefreshingOnLoad = false;
+  });
+}
+
 // Generic request function with token refresh
 async function request<T>(
   endpoint: string,
@@ -106,6 +123,9 @@ async function request<T>(
   // Check if token is expired and refresh if needed
   if (accessToken && !hasValidAccessToken()) {
     await refreshToken();
+  } else if (!accessToken) {
+    // If no token at all, try to refresh once
+    await tryRefreshTokenOnLoad();
   }
   
   const url = `${API_BASE_URL}${endpoint}`;
@@ -170,6 +190,12 @@ async function refreshToken(): Promise<boolean> {
   })();
   
   return refreshPromise;
+}
+
+// Initialize the token refresh on module load if running in browser
+if (typeof window !== 'undefined') {
+  // Only run in browser context
+  tryRefreshTokenOnLoad().catch(console.error);
 }
 
 // Unified API

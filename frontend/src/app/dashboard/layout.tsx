@@ -50,7 +50,10 @@ export default function DashboardLayout({
   useEffect(() => {
     async function checkAuth() {
       try {
-        // Try to get the current user - this will handle token refresh if needed
+        // First try to refresh the token if needed
+        await api.auth.refreshToken();
+        
+        // Then try to get the current user
         await api.users.getCurrent();
         setIsLoading(false);
       } catch (error) {
