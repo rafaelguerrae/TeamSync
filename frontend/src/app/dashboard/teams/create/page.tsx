@@ -1,10 +1,21 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import CreateTeamLoading from './loading';
 
+// Main component with Suspense
 export default function CreateTeamPage() {
+  return (
+    <Suspense fallback={<CreateTeamLoading />}>
+      <CreateTeamContent />
+    </Suspense>
+  );
+}
+
+// Component wrapped in Suspense
+function CreateTeamContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

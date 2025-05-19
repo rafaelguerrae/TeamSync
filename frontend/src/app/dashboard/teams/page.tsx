@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { User } from '@/lib/api';
 import { TeamMembership } from '@/lib/api';
 import { api } from '@/lib/api';
+import dynamic from 'next/dynamic';
+import TeamsLoading from './loading';
 
-export default function TeamsPage() {
+// Component that fetches data and can be wrapped in Suspense
+function TeamsContent() {
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamMembership[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,11 +38,7 @@ export default function TeamsPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-pulse text-lg">Loading teams...</div>
-      </div>
-    );
+    return <TeamsLoading />;
   }
 
   if (error) {
@@ -161,5 +160,14 @@ function TeamCard({ membership }: TeamCardProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component that uses Suspense
+export default function TeamsPage() {
+  return (
+    <Suspense fallback={<TeamsLoading />}>
+      <TeamsContent />
+    </Suspense>
   );
 } 

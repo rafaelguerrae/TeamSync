@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { api, TeamMembership } from '@/lib/api';
 import { User } from '@/lib/api';
+import dynamic from 'next/dynamic';
+import DashboardLoading from './loading';
 
-export default function DashboardPage() {
+// Component that fetches data and can be wrapped in Suspense
+function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamMembership[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,11 +37,7 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-pulse text-lg">Loading dashboard...</div>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   if (error) {
@@ -160,5 +159,14 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main component that uses Suspense
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
   );
 } 

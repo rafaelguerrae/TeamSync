@@ -1,9 +1,12 @@
 'use client';
 
 import { api, User } from '@/lib/api';
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import ProfileLoading from './loading';
 
-export default function ProfilePage() {
+// Component that fetches data and can be wrapped in Suspense
+function ProfileContent() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -109,11 +112,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-pulse text-lg">Loading profile...</div>
-      </div>
-    );
+    return <ProfileLoading />;
   }
 
   return (
@@ -241,5 +240,14 @@ export default function ProfilePage() {
         </div>
       </form>
     </div>
+  );
+}
+
+// Main component that uses Suspense
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileLoading />}>
+      <ProfileContent />
+    </Suspense>
   );
 } 
