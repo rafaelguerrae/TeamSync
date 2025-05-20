@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -13,9 +14,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "TeamSync",
-  description: "TeamSync is a platform for team collaboration and communication",
+  title: "TeamSync - Team Management Platform",
+  description: "TeamSync is a modern platform for team collaboration, task management, and productivity tracking",
 };
 
 // Server component for the root layout
@@ -28,10 +40,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         cz-shortcut-listen="true"
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${poppins.variable} font-inter antialiased`}
       >
-
-        
         <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -4,7 +4,16 @@ import { api, User } from '@/lib/api';
 import { useState, useEffect, FormEvent, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import ProfileLoading from './loading';
-import { User as UserIcon, KeyRound } from 'lucide-react';
+import { User as UserIcon, KeyRound, Save } from 'lucide-react';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // Component that fetches data and can be wrapped in Suspense
 function ProfileContent() {
@@ -168,129 +177,143 @@ function ProfileContent() {
         </div>
       )}
       
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* User Info Column */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-lg font-medium mb-4 flex items-center">
-              <UserIcon className="h-5 w-5 mr-2" />
+        <Card className="dark:bg-gray-900 dark:border-gray-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium flex items-center">
+              <UserIcon className="h-5 w-5 mr-2 text-primary" />
               User Information
-            </h2>
-          </div>
-          
-          <form onSubmit={handleUserInfoSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Name
-                </label>
-                <input
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleUserInfoSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
                   id="name"
                   name="name"
                   type="text"
                   value={userInfoForm.name}
                   onChange={handleUserInfoChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
+                  className="dark:bg-gray-800 dark:border-gray-700"
                 />
               </div>
               
-              <div>
-                <label htmlFor="alias" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Username
-                </label>
-                <input
-                  id="alias"
-                  name="alias"
-                  type="text"
-                  value={userInfoForm.alias}
-                  onChange={handleUserInfoChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="alias">Username</Label>
+                <div className="flex">
+                  <div className="inline-flex items-center px-3 border border-r-0 rounded-l-md border-input bg-muted dark:bg-gray-800 dark:border-gray-700">
+                    @
+                  </div>
+                  <Input
+                    id="alias"
+                    name="alias"
+                    type="text"
+                    value={userInfoForm.alias}
+                    onChange={handleUserInfoChange}
+                    className="rounded-l-none dark:bg-gray-800 dark:border-gray-700"
+                  />
+                </div>
               </div>
               
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Email Address
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
                   id="email"
                   name="email"
                   type="email"
                   value={userInfoForm.email}
                   onChange={handleUserInfoChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
-                  required
+                  className="dark:bg-gray-800 dark:border-gray-700"
                 />
               </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={savingInfo}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {savingInfo ? 'Saving...' : 'Save Information'}
-              </button>
-            </div>
-          </form>
-        </div>
-        
-        {/* Password Column */}
-        <div className="space-y-6 lg:border-l lg:border-gray-200 lg:dark:border-gray-700 lg:pl-12">
-          <div>
-            <h2 className="text-lg font-medium mb-4 flex items-center">
-              <KeyRound className="h-5 w-5 mr-2" />
-              Password Reset
-            </h2>
-          </div>
-          
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Enter your new password below.
-              </p>
               
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  New Password
-                </label>
-                <input
+              <Button 
+                type="submit" 
+                disabled={savingInfo}
+                className="w-full"
+              >
+                {savingInfo ? (
+                  <span className="flex items-center">
+                    <span className="animate-spin mr-2">
+                      <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </span>
+                    Saving...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Information
+                  </span>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Password Column */}
+        <Card className="dark:bg-gray-900 dark:border-gray-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium flex items-center">
+              <KeyRound className="h-5 w-5 mr-2 text-primary" />
+              Change Password
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password</Label>
+                <Input
                   id="password"
                   name="password"
                   type="password"
                   value={passwordForm.password}
                   onChange={handlePasswordChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
+                  className="dark:bg-gray-800 dark:border-gray-700"
                 />
               </div>
               
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Confirm New Password
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
                   value={passwordForm.confirmPassword}
                   onChange={handlePasswordChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
+                  className="dark:bg-gray-800 dark:border-gray-700"
                 />
               </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <button
-                type="submit"
+              
+              <Button 
+                type="submit" 
                 disabled={savingPassword}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="w-full"
               >
-                {savingPassword ? 'Updating...' : 'Update Password'}
-              </button>
-            </div>
-          </form>
-        </div>
+                {savingPassword ? (
+                  <span className="flex items-center">
+                    <span className="animate-spin mr-2">
+                      <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </span>
+                    Updating...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Save className="mr-2 h-4 w-4" />
+                    Update Password
+                  </span>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

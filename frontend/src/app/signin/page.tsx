@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { Eye, EyeOff } from "lucide-react";
+import { LogoText } from "@/components/ui/logo";
 
 export default function SignIn() {
   const router = useRouter();
@@ -54,20 +55,15 @@ export default function SignIn() {
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    setShowPassword(!showPassword); 
   };
 
   return (
-    <div className="hero-gradient min-h-screen px-8 flex flex-col">
+    <div className="hero-gradient min-h-screen p-8 flex flex-col">
+      
       <div className="flex w-full justify-between items-center mb-6">
         <Link href="/" className="hover:opacity-80">
-          <Image
-                src="/teamsync.png"
-                alt="teamsync logo"
-            width={100}
-            height={24}
-            priority
-          />
+          <LogoText size="medium" />
         </Link>
         <ModeToggle />
       </div>
