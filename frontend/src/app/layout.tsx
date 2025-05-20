@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CRUD",
-  description: "This is a CRUD application developed using NestJS and NextJS",
+  title: "TeamSync",
+  description: "TeamSync is a platform for team collaboration and communication",
 };
 
 // Server component for the root layout

@@ -77,9 +77,8 @@ export default function SignUp() {
       <div className="flex w-full justify-between items-center mb-6">
         <Link href="/" className="hover:opacity-80">
           <Image
-            className="dark:invert"
-            src="/nesxt.svg"
-            alt="Nesxt.js logo"
+                src="/teamsync.png"
+                alt="teamsync logo"
             width={100}
             height={24}
             priority

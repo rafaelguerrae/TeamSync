@@ -15,11 +15,10 @@ export default function LandingPage() {
           <div className="flex items-center">
             <Link  href="#hero" className="hover:opacity-80">
               <Image
-                src="/nesxt.svg"
-                alt="Nesxt.js logo"
+                src="/teamsync.png"
+                alt="teamsync logo"
                 width={80}
                 height={24}
-                className="dark:invert"
                 priority
               />
             </Link>
@@ -176,11 +175,10 @@ export default function LandingPage() {
             <div className="flex items-center mb-4 md:mb-0">
             <Link  href="#hero" className="hover:opacity-80">
               <Image
-                src="/nesxt.svg"
-                alt="Nesxt.js logo"
+                src="/teamsync.png"
+                alt="teamsync logo"
                 width={80}
                 height={20}
-                className="dark:invert"
                 priority
               />
             </Link>
