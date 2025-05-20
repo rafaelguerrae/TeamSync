@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { api } from "@/lib/api";
+import { LogoText } from "@/components/ui/logo";
 
 export default function SignUp() {
   const router = useRouter();
@@ -73,17 +74,10 @@ export default function SignUp() {
   };
 
   return (
-    <div className="hero-gradient min-h-screen px-8 sm:px-8 flex flex-col">
+    <div className="hero-gradient min-h-screen p-8 flex flex-col">
       <div className="flex w-full justify-between items-center mb-6">
         <Link href="/" className="hover:opacity-80">
-          <Image
-            className="dark:invert"
-            src="/nesxt.svg"
-            alt="Nesxt.js logo"
-            width={100}
-            height={24}
-            priority
-          />
+          <LogoText size="medium" />
         </Link>
         <ModeToggle />
       </div>

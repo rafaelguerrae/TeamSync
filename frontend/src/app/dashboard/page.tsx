@@ -1,11 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { api, TeamMembership } from '@/lib/api';
 import { User } from '@/lib/api';
+import dynamic from 'next/dynamic';
+import DashboardLoading from './loading';
+import { PlusCircle, Edit } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export default function DashboardPage() {
+// Component that fetches data and can be wrapped in Suspense
+function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
   const [teams, setTeams] = useState<TeamMembership[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,11 +39,7 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-pulse text-lg">Loading dashboard...</div>
-      </div>
-    );
+    return <DashboardLoading />;
   }
 
   if (error) {
@@ -65,9 +66,9 @@ export default function DashboardPage() {
       </div>
 
       {/* User Profile Summary */}
-      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+      <div className="bg-card dark:bg-gray-900 rounded-lg p-6 shadow-sm border dark:border-gray-800">
         <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+          <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800">
             {user?.image && (
               <img 
                 src={user.image} 
@@ -85,12 +86,12 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="mt-4">
-          <Link 
-            href="/dashboard/profile" 
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Edit Profile →
-          </Link>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/profile" className="inline-flex items-center">
+              <Edit className="mr-1 h-4 w-4" />
+              Edit Profile
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -98,33 +99,33 @@ export default function DashboardPage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">My Teams</h2>
-          <Link 
-            href="/dashboard/teams/create" 
-            className="text-sm font-medium px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Create Team
-          </Link>
+          <Button size="sm" asChild>
+            <Link href="/dashboard/teams/create" className="inline-flex items-center">
+              <PlusCircle className="mr-1 h-4 w-4" />
+              Create Team
+            </Link>
+          </Button>
         </div>
         
         {teams.length === 0 ? (
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6 text-center">
+          <div className="bg-card dark:bg-gray-900 rounded-lg p-6 text-center border dark:border-gray-800 shadow-sm">
             <p className="text-gray-500 dark:text-gray-400 mb-4">You don't belong to any teams yet.</p>
-            <Link 
-              href="/dashboard/teams/create" 
-              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Create your first team →
-            </Link>
+            <Button variant="default" size="sm" asChild>
+              <Link href="/dashboard/teams/create" className="inline-flex items-center">
+                <PlusCircle className="mr-1 h-4 w-4" />
+                Create your first team
+              </Link>
+            </Button>
           </div>
         ) : (
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {teams.map((membership) => (
               <div 
                 key={membership.team.id} 
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4"
+                className="bg-card dark:bg-gray-900 border dark:border-gray-800 rounded-lg shadow-sm p-4"
               >
                 <div className="flex items-center space-x-3 mb-3">
-                  <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">
+                  <div className="h-10 w-10 rounded-md overflow-hidden bg-primary/10 dark:bg-gray-800">
                     {membership.team.image && (
                       <img 
                         src={membership.team.image} 
@@ -144,15 +145,14 @@ export default function DashboardPage() {
                   {membership.team.description || 'No description'}
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded">
+                  <span className="text-xs bg-primary/10 text-primary dark:bg-gray-800 dark:text-primary px-2 py-1 rounded">
                     {membership.role}
                   </span>
-                  <Link 
-                    href={`/dashboard/teams/${membership.team.id}`}
-                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    View →
-                  </Link>
+                  <Button variant="link" size="sm" className="text-primary dark:text-primary p-0" asChild>
+                    <Link href={`/dashboard/teams/${membership.team.id}`}>
+                      View →
+                    </Link>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -160,5 +160,14 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main component that uses Suspense
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
   );
 } 

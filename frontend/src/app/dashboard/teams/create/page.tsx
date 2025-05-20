@@ -1,10 +1,21 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import CreateTeamLoading from './loading';
 
+// Main component with Suspense
 export default function CreateTeamPage() {
+  return (
+    <Suspense fallback={<CreateTeamLoading />}>
+      <CreateTeamContent />
+    </Suspense>
+  );
+}
+
+// Component wrapped in Suspense
+function CreateTeamContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +45,7 @@ export default function CreateTeamPage() {
     
     // Auto-generate image if empty
     if (!formData.image.trim()) {
-      const encodedName = encodeURIComponent(formData.name);
-      formData.image = `https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=${encodedName}`;
+      formData.image = `https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=${formData.name}`;
     }
     
     try {
@@ -45,23 +55,22 @@ export default function CreateTeamPage() {
       const payload: {
         name: string;
         description?: string;
+        alias: string;
         image: string;
-        alias?: string;
       } = {
-        name: formData.name,
-        description: formData.description || undefined,
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        alias: formData.alias.trim() || formData.name.trim().toLowerCase().replace(/\s+/g, '-'),
         image: formData.image,
       };
       
-      // Only add alias if it's not empty
-      if (formData.alias.trim()) {
-        payload.alias = formData.alias.trim();
-      }
-      
       const team = await api.teams.create(payload);
       
-      // Redirect to the team page - fix the path to match the API structure
-      router.push(`/dashboard/teams/${team.id}`);
+      // Store the team ID in sessionStorage for the details page
+      sessionStorage.setItem('currentTeamId', team.id.toString());
+      
+      // Redirect to the team details page
+      router.push('/dashboard/teams/details');
     } catch (err) {
       console.error('Error creating team:', err);
       setError('Failed to create team. Please try again.');
@@ -137,24 +146,6 @@ export default function CreateTeamPage() {
           />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Briefly describe your team's purpose or mission
-          </p>
-        </div>
-        
-        <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Team Image URL
-          </label>
-          <input
-            id="image"
-            name="image"
-            type="url"
-            value={formData.image}
-            onChange={handleChange}
-            placeholder="https://example.com/image.png"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
-          />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            URL to an image representing your team. We'll generate one if you don't provide an image.
           </p>
         </div>
         
