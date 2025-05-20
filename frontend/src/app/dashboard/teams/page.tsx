@@ -7,6 +7,7 @@ import { TeamMembership } from '@/lib/api';
 import { api } from '@/lib/api';
 import dynamic from 'next/dynamic';
 import TeamsLoading from './loading';
+import { useRouter } from 'next/navigation';
 
 // Component that fetches data and can be wrapped in Suspense
 function TeamsContent() {
@@ -121,6 +122,13 @@ interface TeamCardProps {
 function TeamCard({ membership }: TeamCardProps) {
   const { team, role, joinedAt } = membership;
   const joinDate = new Date(joinedAt).toLocaleDateString();
+  const router = useRouter();
+  
+  const handleViewTeam = () => {
+    // Store team ID in sessionStorage before navigation
+    sessionStorage.setItem('currentTeamId', team.id.toString());
+    router.push('/dashboard/teams/details');
+  };
   
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
@@ -151,12 +159,12 @@ function TeamCard({ membership }: TeamCardProps) {
           <span className="text-xs text-gray-500 dark:text-gray-400">
             Joined {joinDate}
           </span>
-          <Link 
-            href={`/dashboard/teams/${team.id}`}
+          <button 
+            onClick={handleViewTeam}
             className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:underline"
           >
             View Details
-          </Link>
+          </button>
         </div>
       </div>
     </div>

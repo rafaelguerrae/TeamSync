@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Team, TeamMember, User, api } from '@/lib/api';
 
 export default function TeamDetailPage() {
-  const params = useParams();
   const router = useRouter();
-  const teamId = Number(params.id);
+  const [teamId, setTeamId] = useState<number | null>(null);
   
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
@@ -32,9 +31,21 @@ export default function TeamDetailPage() {
 
   // Add a ref for the modal
   const modalRef = useRef<HTMLDivElement>(null);
+  
+  // Get teamId from sessionStorage
+  useEffect(() => {
+    const id = sessionStorage.getItem('currentTeamId');
+    if (id) {
+      setTeamId(Number(id));
+    } else {
+      setError('Team ID not found. Please go back to the teams page.');
+    }
+  }, []);
 
   useEffect(() => {
     async function loadTeamData() {
+      if (!teamId) return;
+      
       try {
         setLoading(true);
         
@@ -71,24 +82,25 @@ export default function TeamDetailPage() {
   }, [teamId]);
 
   const handleDeleteTeam = async () => {
-    if (!team || team.name !== deleteConfirmName) {
+    if (!team || teamId === null || team.name !== deleteConfirmName) {
       return;
     }
     
     try {
       setIsDeleting(true);
       await api.teams.delete(teamId);
+      // Clear the sessionStorage before navigating back
+      sessionStorage.removeItem('currentTeamId');
       router.push('/dashboard/teams');
     } catch (err) {
       console.error('Error deleting team:', err);
       setError('Failed to delete team. Please try again.');
       setIsDeleting(false);
     }
-  };
-  
+  };  
   // Handler for searching users
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() || teamId === null) return;
     
     try {
       setIsSearching(true);
@@ -119,7 +131,7 @@ export default function TeamDetailPage() {
   
   // Handler for adding selected members
   const handleAddMembers = async () => {
-    if (selectedUsers.length === 0) return;
+    if (selectedUsers.length === 0 || teamId === null) return;
     
     try {
       setIsSubmitting(true);
@@ -213,36 +225,7 @@ export default function TeamDetailPage() {
 
   const isOwner = userRole === 'Administrator';
   
-  return (
-    <div className="space-y-8">
-      {/* Team Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">
-            {team.image && (
-              <img 
-                src={team.image} 
-                alt={team.name} 
-                className="h-full w-full object-cover"
-              />
-            )}
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">{team.name}</h1>
-            {team.alias && (
-              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>
-            )}
-          </div>
-        </div>
-        
-        {isOwner && (
-          <div className="flex space-x-3">
-            <Link
-              href={`/dashboard/teams/${team.id}/edit`}
-              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"
-            >
-              Edit Team
-            </Link>
+    return (    <div className="space-y-8">      {/* Team Header */}      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">        <div className="flex items-center space-x-4">          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">            {team.image && (              <img                 src={team.image}                 alt={team.name}                 className="h-full w-full object-cover"              />            )}          </div>          <div>            <h1 className="text-2xl font-bold">{team.name}</h1>            {team.alias && (              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>            )}          </div>        </div>                {isOwner && (          <div className="flex space-x-3">            <Link              href={`/dashboard/teams/edit`}              onClick={() => sessionStorage.setItem('editTeamId', team.id.toString())}              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"            >              Edit Team            </Link>
             <button
               onClick={() => setIsDeleting(true)}
               className="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-800/50 text-sm font-medium"
@@ -350,18 +333,7 @@ export default function TeamDetailPage() {
                       </button>
                       <button
                         className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
-                        onClick={() => {
-                          if (confirm(`Remove ${member.user.name || member.user.email} from this team?`)) {
-                            api.teams.members.remove(teamId, member.user.id)
-                              .then(() => {
-                                setMembers(members.filter(m => m.user.id !== member.user.id));
-                              })
-                              .catch(err => {
-                                console.error('Error removing member:', err);
-                                setError('Failed to remove team member');
-                              });
-                          }
-                        }}
+                                                onClick={() => {                          if (teamId === null) return;                          if (confirm(`Remove ${member.user.name || member.user.email} from this team?`)) {                            api.teams.members.remove(teamId, member.user.id)                              .then(() => {                                setMembers(members.filter(m => m.user.id !== member.user.id));                              })                              .catch(err => {                                console.error('Error removing member:', err);                                setError('Failed to remove team member');                              });                          }                        }}
                       >
                         Remove
                       </button>
