@@ -56,20 +56,20 @@ function DashboardContent() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-xl md:text-2xl font-bold">Dashboard</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           Welcome back, {user?.name || user?.alias || user?.email}
         </p>
       </div>
 
       {/* User Profile Summary */}
-      <div className="bg-card dark:bg-gray-900 rounded-lg p-6 shadow-sm border dark:border-gray-800">
-        <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800">
+      <div className="bg-card dark:bg-gray-900 rounded-lg p-4 md:p-6 shadow-sm border dark:border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+          <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 mb-4 sm:mb-0">
             {user?.image && (
-              <Image 
+              <img 
                 src={user.image} 
                 alt={user.name || 'Profile'} 
                 className="h-full w-full object-cover"
@@ -96,7 +96,7 @@ function DashboardContent() {
 
       {/* Teams Section */}
       <div>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
           <h2 className="text-xl font-semibold">My Teams</h2>
           <Button size="sm" asChild>
             <Link href="/dashboard/teams/create" className="inline-flex items-center">
@@ -107,7 +107,7 @@ function DashboardContent() {
         </div>
         
         {teams.length === 0 ? (
-          <div className="bg-card dark:bg-gray-900 rounded-lg p-6 text-center border dark:border-gray-800 shadow-sm">
+          <div className="bg-card dark:bg-gray-900 rounded-lg p-4 md:p-6 text-center border dark:border-gray-800 shadow-sm">
             <p className="text-gray-500 dark:text-gray-400 mb-4">You don&apos;t belong to any teams yet.</p>
             <Button variant="default" size="sm" asChild>
               <Link href="/dashboard/teams/create" className="inline-flex items-center">
@@ -117,7 +117,7 @@ function DashboardContent() {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {teams.map((membership) => (
               <div 
                 key={membership.team.id} 
@@ -126,7 +126,7 @@ function DashboardContent() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="h-10 w-10 rounded-md overflow-hidden bg-primary/10 dark:bg-gray-800">
                     {membership.team.image && (
-                      <Image
+                      <img 
                         src={membership.team.image} 
                         alt={membership.team.name} 
                         className="h-full w-full object-cover"

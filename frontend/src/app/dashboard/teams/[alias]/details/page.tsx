@@ -225,7 +225,7 @@ export default function TeamDetailPage() {
 
   const isOwner = userRole === 'Administrator';
   
-    return (    <div className="space-y-8">      {/* Team Header */}      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">        <div className="flex items-center space-x-4">          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">            {team.image && (              <Image                 src={team.image}                 alt={team.name}                 className="h-full w-full object-cover"              />            )}          </div>          <div>            <h1 className="text-2xl font-bold">{team.name}</h1>            {team.alias && (              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>            )}          </div>        </div>                {isOwner && (          <div className="flex space-x-3">            <Link              href={`/dashboard/teams/edit`}              onClick={() => sessionStorage.setItem('editTeamId', team.id.toString())}              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"            >              Edit Team            </Link>
+    return (    <div className="space-y-8">      {/* Team Header */}      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">        <div className="flex items-center space-x-4">          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">            {team.image && (              <img                 src={team.image}                 alt={team.name}                 className="h-full w-full object-cover"              />            )}          </div>          <div>            <h1 className="text-2xl font-bold">{team.name}</h1>            {team.alias && (              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>            )}          </div>        </div>                {isOwner && (          <div className="flex space-x-3">            <Link              href={`/dashboard/teams/edit`}              onClick={() => sessionStorage.setItem('editTeamId', team.id.toString())}              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"            >              Edit Team            </Link>
             <button
               onClick={() => setIsDeleting(true)}
               className="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-800/50 text-sm font-medium"
@@ -291,7 +291,7 @@ export default function TeamDetailPage() {
                     <div className="flex items-center space-x-3">
                       <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                         {member.user.image && (
-                          <Image 
+                          <img 
                             src={member.user.image} 
                             alt={member.user.name || 'User'} 
                             className="h-full w-full object-cover"
@@ -475,7 +475,7 @@ export default function TeamDetailPage() {
                             <div className="flex items-center space-x-3 flex-1">
                               <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                                 {user.image && (
-                                  <Image 
+                                  <img 
                                     src={user.image} 
                                     alt={user.name || 'User'} 
                                     className="h-full w-full object-cover"

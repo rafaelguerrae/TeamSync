@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
 import { LogoText } from "@/components/ui/logo";
-import { Home, UserCircle, Users, PlusCircle, LogOut } from "lucide-react";
+import { Home, UserCircle, Users, PlusCircle, LogOut, Menu } from "lucide-react";
 
 interface NavItemProps {
   href: string;
@@ -49,24 +49,106 @@ export default function DashboardLayout({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Detect screen size and set mobile view
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobileView(mobile);
+      
+      // Auto-minify sidebar on mobile
+      if (mobile && !isMinimized) {
+        setIsMinimized(true);
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Initial check
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMinimized]);
+
+  // Toggle sidebar function for mobile
+  const toggleSidebar = () => {
+    if (isMobileView) {
+      setIsSidebarOpen(!isSidebarOpen);
+    } else {
+      setIsMinimized(!isMinimized);
+    }
+  };
 
   useEffect(() => {
+    let mounted = true;
+    let retryCount = 0;
+    const maxRetries = 2;
+    
     async function checkAuth() {
+      if (!mounted) return;
+      
       try {
+        console.log("Dashboard: Checking authentication...");
+         
+        // Check if we already have a valid access token first
+        if (api.auth.hasValidAccessToken()) {
+          console.log("Using existing valid access token");
+          try {
+            const user = await api.users.getCurrent();
+            console.log("User authenticated successfully:", user);
+            if (mounted) setIsLoading(false);
+            return;
+          } catch (userError) {
+            console.error("Failed to get current user with existing token:", userError);
+            // Retry a couple times before falling back to token refresh
+            if (retryCount < maxRetries) {
+              console.log(`Retrying user fetch (${retryCount + 1}/${maxRetries})...`);
+              retryCount++;
+              // Small delay before retry
+              await new Promise(resolve => setTimeout(resolve, 500));
+              await checkAuth();
+              return;
+            }
+            // Continue to token refresh if retries exhausted
+          }
+        }
+        
         // First try to refresh the token if needed
-        await api.auth.refreshToken();
+        const refreshResult = await api.auth.refreshToken();
+        console.log("Token refresh result:", refreshResult);
+        
+        if (!refreshResult) {
+          console.log("Token refresh failed, redirecting to signin");
+          if (mounted) router.push("/signin");
+          return;
+        }
         
         // Then try to get the current user
-        await api.users.getCurrent();
-        setIsLoading(false);
+        try {
+          const user = await api.users.getCurrent();
+          console.log("User authenticated successfully:", user);
+          if (mounted) setIsLoading(false);
+        } catch (userError) {
+          console.error("Failed to get current user:", userError);
+          if (mounted) router.push("/signin");
+        }
       } catch (error) {
         // Not authenticated, redirect to signin
-        console.log("Not authenticated, redirecting to signin:", error);
-        router.push("/signin");
+        console.error("Authentication error:", error);
+        if (mounted) router.push("/signin");
       }
     }
 
     checkAuth();
+    
+    return () => {
+      mounted = false;
+    };
   }, [router]);
 
   if (isLoading) {
@@ -78,11 +160,21 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900  flex">
-      {/* Fixed Sidebar */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex relative">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileView && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-10"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      
+      {/* Sidebar */}
       <aside className={cn(
-        "fixed left-0 top-0 h-screen bg-white dark:bg-gray-950 shadow transition-all duration-300 z-10",
-        isMinimized ? "w-16" : "w-64"
+        "fixed left-0 top-0 h-screen bg-white dark:bg-gray-950 shadow transition-all duration-300 z-20",
+        isMinimized ? "w-16" : "w-64",
+        isMobileView && !isSidebarOpen ? "-translate-x-full" : "translate-x-0"
       )}>
         <div className="flex flex-col p-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
@@ -92,7 +184,7 @@ export default function DashboardLayout({
             </Link>
             }
             <button 
-              onClick={() => setIsMinimized(!isMinimized)}
+              onClick={toggleSidebar}
               className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-900 hover:cursor-pointer"
               aria-label={isMinimized ? "Expand sidebar" : "Collapse sidebar"}
             >
@@ -163,9 +255,22 @@ export default function DashboardLayout({
       {/* Main Content */}
       <div className={cn(
         "transition-all duration-300 min-h-screen flex-1",
-        isMinimized ? "ml-16" : "ml-64"
+        !isMobileView && (isMinimized ? "ml-16" : "ml-64")
       )}>
-        <div className="container mx-auto px-6 py-8">
+        {/* Mobile Top Bar with Menu Button */}
+        {isMobileView && (
+          <div className="sticky top-0 z-10 bg-white dark:bg-gray-950 shadow p-4 flex items-center">
+            <button 
+              onClick={toggleSidebar}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-900 mr-4"
+              aria-label="Toggle sidebar"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <LogoText size="small" />
+          </div>
+        )}
+        <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
           {children}
         </div>
       </div>

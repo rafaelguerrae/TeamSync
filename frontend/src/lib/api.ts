@@ -170,17 +170,38 @@ async function refreshToken(): Promise<boolean> {
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
+      console.log("Attempting to refresh token...");
+      
+      // Determine if we're making a cross-origin request
+      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+      const isCrossOrigin = currentOrigin && !API_BASE_URL.startsWith(currentOrigin);
+      
+      console.log(`Refresh token request: ${API_BASE_URL}/refresh-token (cross-origin: ${isCrossOrigin})`);
+      
       const response = await fetch(`${API_BASE_URL}/refresh-token`, {
         method: 'POST',
-        credentials: 'include' // Important for sending the refresh token cookie
+        credentials: 'include', // Important for sending the refresh token cookie
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        mode: 'cors', // Explicitly set CORS mode
       });
       
       if (!response.ok) {
+        console.error(`Refresh token failed with status: ${response.status}`);
+        try {
+          const errorData = await response.json();
+          console.error('Refresh token error details:', errorData);
+        } catch (e) {
+          console.error('No JSON error details available');
+        }
         clearAccessToken();
         return false;
       }
       
       const data = await response.json();
+      console.log("Token refreshed successfully");
       setAccessToken(data.accessToken);
       return true;
     } catch (error) {
@@ -206,26 +227,37 @@ export const api = {
   // Auth methods
   auth: {
     signIn: async (email: string, password: string): Promise<{ user: User }> => {
-      const response = await fetch(`${API_BASE_URL}/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Login failed: ${response.status}`);
+      try {
+        console.log(`Attempting to sign in with email: ${email}`);
+        const response = await fetch(`${API_BASE_URL}/signin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include',
+          mode: 'cors' // Explicitly set CORS mode
+        });
+        
+        if (!response.ok) {
+          console.error(`Login failed with status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Login error details:', errorData);
+          throw new Error(errorData.message || `Login failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Sign in successful, received access token");
+        
+        // Store access token in memory only (not localStorage)
+        setAccessToken(data.accessToken);
+        
+        return { user: data.user };
+      } catch (error) {
+        console.error('Sign in error:', error);
+        throw error;
       }
-      
-      const data = await response.json();
-      
-      // Store access token in memory only (not localStorage)
-      setAccessToken(data.accessToken);
-      
-      return { user: data.user };
     },
     
     signUp: async (userData: { 
@@ -263,7 +295,8 @@ export const api = {
       }).catch(err => console.error('Error during signout:', err));
     },
     
-    refreshToken
+    refreshToken,
+    hasValidAccessToken
   },
   
   // User methods

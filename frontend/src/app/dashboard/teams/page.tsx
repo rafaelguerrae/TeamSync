@@ -130,7 +130,7 @@ function TeamCard({ membership }: TeamCardProps) {
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
       <div className="h-32 bg-gray-200 dark:bg-gray-700 relative">
         {team.image && (
-          <Image
+          <img 
             src={team.image} 
             alt={team.name} 
             className="h-full w-full object-cover"

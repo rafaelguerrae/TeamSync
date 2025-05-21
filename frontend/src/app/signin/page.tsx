@@ -41,10 +41,16 @@ export default function SignIn() {
     
     try { 
       setIsLoading(true);
-      await api.auth.signIn(email, password);
+      const result = await api.auth.signIn(email, password);
+      console.log("Sign in successful, authenticated as:", result.user.email);
       
-      // Successfully signed in, redirect to dashboard
-      router.push("/dashboard");
+      // Ensure we have a valid access token before redirecting
+      if (api.auth.hasValidAccessToken()) {
+        // Successfully signed in with valid token, redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        setError("Authentication was successful but token is invalid. Please try again.");
+      }
     } catch (err) {
       console.error("Sign in error:", err);
       setError(err instanceof Error ? err.message : "Failed to sign in. Please try again.");
