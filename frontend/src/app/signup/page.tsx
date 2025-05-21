@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { api } from "@/lib/api";
 import { LogoText } from "@/components/ui/logo";
@@ -56,8 +55,8 @@ export default function SignUp() {
         image
       };
       
-      // Sign up the user using the fetch API directly since authApi doesn't have signUp
-      const response = await api.auth.signUp(userData);
+      // Sign up the user
+      await api.auth.signUp(userData);
       
       // On successful signup, redirect to signin page
       router.push("/signin?registered=true");

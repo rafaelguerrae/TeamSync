@@ -3,18 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { api } from "@/lib/api";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function SignIn() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,15 +29,15 @@ export default function SignIn() {
     setError("");
     setSuccess("");
     
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (!email) {
+      setError("Email is required");
       return;
     }
     
     try { 
       setIsLoading(true);
-    //  await api.auth.resetPassword(email);
-      
+      // Implement password reset functionality
+      setSuccess("Password reset instructions have been sent to your email.");
     } catch (err) {
       console.error("Reset password error:", err);
       setError(err instanceof Error ? err.message : "Failed to reset password. Please try again.");

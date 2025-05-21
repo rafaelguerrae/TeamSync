@@ -61,7 +61,7 @@ export default function DashboardLayout({
         setIsLoading(false);
       } catch (error) {
         // Not authenticated, redirect to signin
-        console.log("Not authenticated, redirecting to signin");
+        console.log("Not authenticated, redirecting to signin:", error);
         router.push("/signin");
       }
     }

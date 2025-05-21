@@ -2,16 +2,13 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { User } from '@/lib/api';
 import { TeamMembership } from '@/lib/api';
 import { api } from '@/lib/api';
-import dynamic from 'next/dynamic';
 import TeamsLoading from './loading';
 import { useRouter } from 'next/navigation';
-
+import Image from 'next/image';
 // Component that fetches data and can be wrapped in Suspense
-function TeamsContent() {
-  const [user, setUser] = useState<User | null>(null);
+function TeamsContent() { 
   const [teams, setTeams] = useState<TeamMembership[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +18,6 @@ function TeamsContent() {
       try {
         setLoading(true);
         const userData = await api.users.getCurrent();
-        setUser(userData);
         
         const userTeams = await api.users.getUserTeams(userData.id);
         setTeams(userTeams);
@@ -73,7 +69,7 @@ function TeamsContent() {
 
       {teams.length === 0 ? (
         <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-8 text-center">
-          <h2 className="text-xl font-medium mb-2">You don't belong to any teams yet</h2>
+          <h2 className="text-xl font-medium mb-2">You don&apos;t belong to any teams yet</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-6">
             Create your first team to start collaborating with others
           </p>
@@ -101,7 +97,7 @@ function TeamsContent() {
           {/* Teams you're a member of */}
           {memberTeams.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Teams You're In</h2>
+              <h2 className="text-xl font-semibold mb-4">Teams You&apos;re In</h2>
               <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {memberTeams.map((membership) => (
                   <TeamCard key={membership.team.id} membership={membership} />
@@ -134,7 +130,7 @@ function TeamCard({ membership }: TeamCardProps) {
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
       <div className="h-32 bg-gray-200 dark:bg-gray-700 relative">
         {team.image && (
-          <img 
+          <Image
             src={team.image} 
             alt={team.name} 
             className="h-full w-full object-cover"

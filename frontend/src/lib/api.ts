@@ -33,8 +33,10 @@ export interface AuthResponse {
   user: User;
 }
 
-// API base URL
-const API_BASE_URL = 'http://localhost:3000';
+// API base URL from environment variables
+const API_BASE_URL = typeof window !== 'undefined' 
+  ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+  : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 // In-memory token store (not accessible via XSS)
 let accessToken: string | null = null;
@@ -44,7 +46,7 @@ let refreshPromise: Promise<boolean> | null = null;
 let isRefreshingOnLoad = false;
 
 // Decode JWT without a library
-function decodeJwt(token: string): { sub: string; email: string; exp: number; [key: string]: any } | null {
+function decodeJwt(token: string): { sub: string; email: string; exp: number; [key: string]: unknown } | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -182,6 +184,7 @@ async function refreshToken(): Promise<boolean> {
       setAccessToken(data.accessToken);
       return true;
     } catch (error) {
+      console.error('Error refreshing token:', error);
       clearAccessToken();
       return false;
     } finally {

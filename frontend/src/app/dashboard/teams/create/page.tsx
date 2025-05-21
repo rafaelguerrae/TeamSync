@@ -145,7 +145,7 @@ function CreateTeamContent() {
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800"
           />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Briefly describe your team's purpose or mission
+            Briefly describe your team&apos;s purpose or mission
           </p>
         </div>
         

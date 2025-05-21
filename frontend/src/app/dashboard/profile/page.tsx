@@ -2,7 +2,6 @@
 
 import { api, User } from '@/lib/api';
 import { useState, useEffect, FormEvent, Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import ProfileLoading from './loading';
 import { User as UserIcon, KeyRound, Save } from 'lucide-react';
 import { 

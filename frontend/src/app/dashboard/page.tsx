@@ -4,11 +4,10 @@ import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { api, TeamMembership } from '@/lib/api';
 import { User } from '@/lib/api';
-import dynamic from 'next/dynamic';
 import DashboardLoading from './loading';
 import { PlusCircle, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import Image from 'next/image';
 // Component that fetches data and can be wrapped in Suspense
 function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
@@ -70,7 +69,7 @@ function DashboardContent() {
         <div className="flex items-center space-x-4">
           <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800">
             {user?.image && (
-              <img 
+              <Image 
                 src={user.image} 
                 alt={user.name || 'Profile'} 
                 className="h-full w-full object-cover"
@@ -109,7 +108,7 @@ function DashboardContent() {
         
         {teams.length === 0 ? (
           <div className="bg-card dark:bg-gray-900 rounded-lg p-6 text-center border dark:border-gray-800 shadow-sm">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">You don't belong to any teams yet.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">You don&apos;t belong to any teams yet.</p>
             <Button variant="default" size="sm" asChild>
               <Link href="/dashboard/teams/create" className="inline-flex items-center">
                 <PlusCircle className="mr-1 h-4 w-4" />
@@ -127,7 +126,7 @@ function DashboardContent() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="h-10 w-10 rounded-md overflow-hidden bg-primary/10 dark:bg-gray-800">
                     {membership.team.image && (
-                      <img 
+                      <Image
                         src={membership.team.image} 
                         alt={membership.team.name} 
                         className="h-full w-full object-cover"

@@ -233,7 +233,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "TeamSync has transformed how our product team collaborates. The intuitive interface and powerful features have increased our productivity by 35%."
+                &quot;TeamSync has transformed how our product team collaborates. The intuitive interface and powerful features have increased our productivity by 35%.&quot;
               </p>
             </div>
             
@@ -248,7 +248,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "As a creative team, we needed something flexible yet structured. TeamSync gives us the perfect balance, especially for our remote team members."
+                &quot;As a creative team, we needed something flexible yet structured. TeamSync gives us the perfect balance, especially for our remote team members.&quot;
               </p>
             </div>
             
@@ -263,7 +263,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                "The analytics and reporting features in TeamSync have given us unprecedented insight into our team's workload and productivity patterns."
+                &quot;The analytics and reporting features in TeamSync have given us unprecedented insight into our team&apos;s workload and productivity patterns.&quot;
               </p>
             </div>
           </div>
@@ -276,7 +276,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose the plan that fits your team's needs. All plans include core features.
+              Choose the plan that fits your team&apos;s needs. All plans include core features.
             </p>
           </div>
           
@@ -310,7 +310,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-primary mr-2" />
-                  <span>Time tracking & reporting</span>
+                  <span>Time tracking &amp; reporting</span>
                 </li>
               </ul>
               <Button className="w-full" asChild>

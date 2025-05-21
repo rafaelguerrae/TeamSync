@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { Eye, EyeOff } from "lucide-react";
 import { LogoText } from "@/components/ui/logo";
@@ -135,7 +134,7 @@ export default function SignIn() {
           </CardContent>
           <CardFooter className="flex justify-center">
             <div className="text-sm text-center">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-primary hover:underline font-bold">
                 Sign up
               </Link>
