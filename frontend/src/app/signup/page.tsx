@@ -24,7 +24,7 @@ export default function SignUp() {
   // Default avatar URL using UI Avatars
   const getDefaultAvatarUrl = (name: string) => {
     const formattedName = encodeURIComponent(name || "User");
-    return `https://ui-avatars.com/api/?name=${formattedName}&background=0D8ABC&color=fff`;
+    return `https://ui-avatars.com/api/?name=${formattedName}&background=42984C&color=fff`;
   };
   
   const handleSubmit = async (e: React.FormEvent) => {

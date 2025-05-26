@@ -7,8 +7,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowedOrigins = isProduction 
+    ? [
+        'https://team-sync-alpha.vercel.app', // Your Vercel frontend URL
+        'https://teamsync-rrpp.onrender.com'  // Your backend URL (for Swagger)
+      ]
+    : true; // Allow all origins in development
+
   app.enableCors({
-    origin: true, // Allow all origins in development
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true, // Important for cookies
     allowedHeaders: 'Content-Type,Accept,Authorization',

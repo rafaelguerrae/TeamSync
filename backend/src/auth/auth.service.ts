@@ -134,16 +134,26 @@ export class AuthService {
   }
   
   async signOut(response: Response) {
-    // Clear the refresh token cookie
-    response.clearCookie('refresh_token');
+    // Clear the refresh token cookie with the same configuration
+    const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: isProduction ? 'none' : 'strict',
+      path: '/',
+    });
+    
     return { message: 'Signed out successfully' };
   }
   
   private setRefreshTokenCookie(response: Response, token: string) {
+    const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    
     response.cookie('refresh_token', token, {
       httpOnly: true,         // Prevents JavaScript access
       secure: true,           // Only sent over HTTPS
-      sameSite: 'strict',     // Protects against CSRF
+      sameSite: isProduction ? 'none' : 'strict', // 'none' for cross-origin in production
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
       path: '/',              // Available across the site
     });
