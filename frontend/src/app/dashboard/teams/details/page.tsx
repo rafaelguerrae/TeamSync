@@ -24,7 +24,7 @@ export default function TeamDetailPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [selectedRole, setSelectedRole] = useState('MEMBER');
+  const [selectedRole, setSelectedRole] = useState('Member');
   const [isSearching, setIsSearching] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addMemberError, setAddMemberError] = useState<string | null>(null);
@@ -70,7 +70,14 @@ export default function TeamDetailPage() {
         setError(null);
       } catch (err) {
         console.error('Error loading team data:', err);
-        setError('Failed to load team data. Please try again.');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load team data. Please try again.';
+        
+        // Handle access control errors specifically
+        if (errorMessage.includes('permission') || errorMessage.includes('access')) {
+          setError('You do not have access to this team. You must be a team member to view team details.');
+        } else {
+          setError(errorMessage);
+        }
       } finally {
         setLoading(false);
       }
@@ -155,7 +162,13 @@ export default function TeamDetailPage() {
       setIsAddingMembers(false);
     } catch (err) {
       console.error('Error adding members:', err);
-      setAddMemberError('Failed to add one or more members. They might already be part of the team.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add members';
+      
+      if (errorMessage.includes('permission') || errorMessage.includes('access')) {
+        setAddMemberError('You do not have permission to add members to this team. Only team administrators can add members.');
+      } else {
+        setAddMemberError('Failed to add one or more members. They might already be part of the team.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -196,15 +209,38 @@ export default function TeamDetailPage() {
   }
 
   if (error) {
+    const isAccessError = error.includes('permission') || error.includes('access');
+    
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-md">
-        <p className="text-red-700 dark:text-red-400">{error}</p>
-        <button 
-          className="mt-2 text-sm font-medium text-red-600 dark:text-red-400 hover:underline"
-          onClick={() => window.location.reload()}
-        >
-          Try again
-        </button>
+      <div className={`border p-4 rounded-md ${
+        isAccessError 
+          ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+      }`}>
+        <p className={`${
+          isAccessError 
+            ? 'text-yellow-700 dark:text-yellow-400'
+            : 'text-red-700 dark:text-red-400'
+        }`}>
+          {error}
+        </p>
+        <div className="mt-3 flex gap-2">
+          {isAccessError ? (
+            <Link 
+              href="/dashboard/teams"
+              className="text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:underline"
+            >
+              Go back to your teams
+            </Link>
+          ) : (
+            <button 
+              className="text-sm font-medium text-red-600 dark:text-red-400 hover:underline"
+              onClick={() => window.location.reload()}
+            >
+              Try again
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -223,9 +259,9 @@ export default function TeamDetailPage() {
     );
   }
 
-  const isOwner = userRole === 'Administrator';
+  const isAdmin = userRole === 'Administrator';
   
-    return (    <div className="space-y-8">      {/* Team Header */}      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">        <div className="flex items-center space-x-4">          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">            {team.image && (              <img                 src={team.image}                 alt={team.name}                 className="h-full w-full object-cover"              />            )}          </div>          <div>            <h1 className="text-2xl font-bold">{team.name}</h1>            {team.alias && (              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>            )}          </div>        </div>                {isOwner && (          <div className="flex space-x-3">            <Link              href={`/dashboard/teams/edit`}              onClick={() => sessionStorage.setItem('editTeamId', team.id.toString())}              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"            >              Edit Team            </Link>
+    return (    <div className="space-y-8">      {/* Team Header */}      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">        <div className="flex items-center space-x-4">          <div className="h-16 w-16 rounded-md overflow-hidden bg-gray-200 dark:bg-gray-700">            {team.image && (              <img                 src={team.image}                 alt={team.name}                 className="h-full w-full object-cover"              />            )}          </div>          <div>            <h1 className="text-2xl font-bold">{team.name}</h1>            {team.alias && (              <p className="text-gray-500 dark:text-gray-400">@{team.alias}</p>            )}          </div>        </div>                {isAdmin && (          <div className="flex space-x-3">            <Link              href={`/dashboard/teams/edit`}              onClick={() => sessionStorage.setItem('editTeamId', team.id.toString())}              className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50 text-sm font-medium"            >              Edit Team            </Link>
             <button
               onClick={() => setIsDeleting(true)}
               className="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-800/50 text-sm font-medium"
@@ -252,7 +288,7 @@ export default function TeamDetailPage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Team Members</h2>
-          {isOwner && (
+          {isAdmin && (
             <button
               onClick={() => setIsAddingMembers(true)}
               className="hover:cursor-pointer flex items-center gap-1 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -277,7 +313,7 @@ export default function TeamDetailPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Joined
                 </th>
-                {isOwner && (
+                {isAdmin && (
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
@@ -310,7 +346,7 @@ export default function TeamDetailPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      member.role === 'OWNER' 
+                      member.role === 'Administrator' 
                         ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
                         : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                     }`}>
@@ -320,7 +356,7 @@ export default function TeamDetailPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(member.joinedAt).toLocaleDateString()}
                   </td>
-                  {isOwner && member.user.id !== currentUser?.id && (
+                  {isAdmin && member.user.id !== currentUser?.id && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <button
                         className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-3"
@@ -339,7 +375,7 @@ export default function TeamDetailPage() {
                       </button>
                     </td>
                   )}
-                  {(!isOwner || member.user.id === currentUser?.id) && isOwner && (
+                  {(!isAdmin || member.user.id === currentUser?.id) && isAdmin && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       {member.user.id === currentUser?.id ? (
                         <span className="text-gray-400 dark:text-gray-500">

@@ -152,7 +152,18 @@ async function request<T>(
     try {
       const errorData = await response.json();
       errorMessage = errorData.message || errorMessage;
-    } catch {} // Ignore JSON parsing errors
+      
+      // Handle specific error cases
+      if (response.status === 403) {
+        // Forbidden - likely access control issue
+        throw new Error(errorData.message || 'You do not have permission to access this resource');
+      }
+    } catch (jsonError) {
+      // If JSON parsing fails, use the original error message
+      if (response.status === 403) {
+        throw new Error('You do not have permission to access this resource');
+      }
+    }
     
     throw new Error(errorMessage);
   }

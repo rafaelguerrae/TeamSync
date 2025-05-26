@@ -52,8 +52,8 @@ function TeamsContent() {
     );
   }
 
-  const ownerTeams = teams.filter(team => team.role === 'OWNER');
-  const memberTeams = teams.filter(team => team.role !== 'OWNER');
+  const adminTeams = teams.filter(team => team.role === 'Administrator');
+  const memberTeams = teams.filter(team => team.role !== 'Administrator');
 
   return (
     <div className="space-y-8">
@@ -82,12 +82,12 @@ function TeamsContent() {
         </div>
       ) : (
         <>
-          {/* Teams you own */}
-          {ownerTeams.length > 0 && (
+          {/* Teams you administer */}
+          {adminTeams.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Teams You Own</h2>
+              <h2 className="text-xl font-semibold mb-4">Teams You Administer</h2>
               <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {ownerTeams.map((membership) => (
+                {adminTeams.map((membership) => (
                   <TeamCard key={membership.team.id} membership={membership} />
                 ))}
               </div>

@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -18,6 +19,7 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { AddUserToTeamDto } from 'src/teams/dto/add-user-to-team.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { Request } from 'express';
 
 @Controller('teams')
 export class TeamsController {
@@ -28,8 +30,9 @@ export class TeamsController {
   @ApiOperation({ summary: 'Create a new team' })
   @ApiBody({ type: CreateTeamDto })
   @ApiResponse({ status: 201, description: 'Team created.' })
-  async create(@Body() dto: CreateTeamDto) {
-    return await this.teamsService.create(dto);
+  async create(@Body() dto: CreateTeamDto, @Req() request: Request) {
+    const creatorUserId = Number(request.user.sub);
+    return await this.teamsService.create(dto, creatorUserId);
   }
 
   @Get()
@@ -44,8 +47,10 @@ export class TeamsController {
   @ApiParam({ name: 'teamId', type: Number })
   @ApiResponse({ status: 200, description: 'Team found.' })
   @ApiResponse({ status: 404, description: 'Team not found.' })
-  async findOne(@Param('teamId', ParseIntPipe) id: number) {
-    return await this.teamsService.findOne(id);
+  @ApiResponse({ status: 403, description: 'Access denied - not a member of this team.' })
+  async findOne(@Param('teamId', ParseIntPipe) id: number, @Req() request: Request) {
+    const requestingUserId = Number(request.user.sub);
+    return await this.teamsService.findOneWithMembershipCheck(id, requestingUserId);
   }
 
   @Patch(':teamId')
@@ -54,11 +59,14 @@ export class TeamsController {
   @ApiParam({ name: 'teamId', type: Number })
   @ApiBody({ type: UpdateTeamDto })
   @ApiResponse({ status: 200, description: 'Team updated.' })
+  @ApiResponse({ status: 403, description: 'Access denied - not a member of this team.' })
   async update(
     @Param('teamId', ParseIntPipe) id: number,
     @Body() dto: UpdateTeamDto,
+    @Req() request: Request,
   ) {
-    return await this.teamsService.update(id, dto);
+    const requestingUserId = Number(request.user.sub);
+    return await this.teamsService.update(id, dto, requestingUserId);
   }
 
   @Delete(':teamId')
@@ -88,8 +96,10 @@ export class TeamsController {
   @ApiOperation({ summary: 'List users in a team' })
   @ApiParam({ name: 'teamId', type: Number })
   @ApiResponse({ status: 200, description: 'Team memberships.' })
-  async getTeamUsers(@Param('teamId', ParseIntPipe) id: number) {
-    return await this.teamsService.getTeamUsers(id);
+  @ApiResponse({ status: 403, description: 'Access denied - not a member of this team.' })
+  async getTeamUsers(@Param('teamId', ParseIntPipe) id: number, @Req() request: Request) {
+    const requestingUserId = Number(request.user.sub);
+    return await this.teamsService.getTeamUsersWithMembershipCheck(id, requestingUserId);
   }
 
   @Patch(':teamId/members')

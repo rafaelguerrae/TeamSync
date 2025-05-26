@@ -3,6 +3,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -76,6 +77,8 @@ export class UsersService {
     }
     return user;
   }
+
+
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     // Ensure user exists
@@ -171,4 +174,6 @@ export class UsersService {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
   }
+
+
 }

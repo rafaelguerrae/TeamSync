@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
@@ -15,13 +16,20 @@ import { PrismaService } from 'src/database/prisma.service';
 export class TeamsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createTeamDto: CreateTeamDto) {
+  async create(createTeamDto: CreateTeamDto, creatorUserId: number) {
     try {
       const team = await this.prisma.team.create({
         data: {
           name: createTeamDto.name,
+          alias: createTeamDto.alias,
           description: createTeamDto.description,
           image: createTeamDto.image,
+          memberships: {
+            create: {
+              userId: creatorUserId,
+              role: 'Administrator',
+            },
+          },
         },
         select: {
           id: true,
@@ -66,12 +74,18 @@ export class TeamsService {
     return team;
   }
 
-  async update(id: number, updateTeamDto: UpdateTeamDto) {
+  async update(id: number, updateTeamDto: UpdateTeamDto, requestingUserId: number) {
     await this.findOne(id);
+
+    // Check if the requesting user is a member of this team
+    const isMember = await this.isUserMemberOfTeam(requestingUserId, id);
+    if (!isMember) {
+      throw new ForbiddenException('You can only update teams you are a member of');
+    }
 
     const updated = await this.prisma.team.update({
       where: { id },
-      // TypeScript will infer `data`'s type from Prisma’s `.update()` signature
+      // TypeScript will infer `data`'s type from Prisma's `.update()` signature
       data: {
         name: updateTeamDto.name,
         alias: updateTeamDto.alias,
@@ -164,6 +178,63 @@ export class TeamsService {
     });
     return this.prisma.userOnTeam.delete({
       where: { userId_teamId: { userId, teamId } },
+    });
+  }
+
+  async isUserMemberOfTeam(userId: number, teamId: number): Promise<boolean> {
+    const membership = await this.prisma.userOnTeam.findUnique({
+      where: { userId_teamId: { userId, teamId } },
+    });
+    return !!membership;
+  }
+
+  async findOneWithMembershipCheck(id: number, requestingUserId: number) {
+    const team = await this.prisma.team.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        alias: true,
+        name: true,
+        description: true,
+        image: true,
+      },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team with id ${id} not found`);
+    }
+
+    // Check if the requesting user is a member of this team
+    const isMember = await this.isUserMemberOfTeam(requestingUserId, id);
+    if (!isMember) {
+      throw new ForbiddenException('You can only access information of teams you are a member of');
+    }
+
+    return team;
+  }
+
+  async getTeamUsersWithMembershipCheck(teamId: number, requestingUserId: number) {
+    // Check if the requesting user is a member of this team
+    const isMember = await this.isUserMemberOfTeam(requestingUserId, teamId);
+    if (!isMember) {
+      throw new ForbiddenException('You can only access members of teams you are a member of');
+    }
+
+    await this.findOne(teamId);
+    return this.prisma.userOnTeam.findMany({
+      where: { teamId },
+      select: {
+        role: true,
+        joinedAt: true,
+        user: {
+          select: {
+            id: true,
+            alias: true,
+            email: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
     });
   }
 }
