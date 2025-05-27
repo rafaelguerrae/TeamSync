@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Team, TeamMember, User, api } from '@/lib/api';
 import Image from 'next/image';
+import { LogoText } from '@/components/ui/logo';
 export default function TeamDetailPage() {
   const router = useRouter();
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -202,8 +203,10 @@ export default function TeamDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-pulse text-lg">Loading team details...</div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="animate-pulse">
+          <LogoText size="large" />
+        </div>
       </div>
     );
   }

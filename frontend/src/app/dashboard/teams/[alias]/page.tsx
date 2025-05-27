@@ -5,7 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Team, TeamMember, User, api } from '@/lib/api';
 import Image from 'next/image';
-
+import { Button } from '@/components/ui/button';
+import { LogoText } from '@/components/ui/logo';
 export default function TeamDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -195,8 +196,10 @@ export default function TeamDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="animate-pulse">
+          <LogoText size="large" />
+        </div>
       </div>
     );
   }
@@ -230,7 +233,7 @@ export default function TeamDetailPage() {
         <p className="text-gray-600 dark:text-gray-400">Team not found.</p>
         <Link 
           href="/dashboard/teams"
-          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-sm font-medium text-green-600 dark:text-green-400 hover:underline"
         >
           Back to teams
         </Link>
@@ -247,9 +250,9 @@ export default function TeamDetailPage() {
         <div className="flex items-center space-x-4">
           <Link 
             href="/dashboard/teams"
-            className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+            className="text-green-600 dark:text-green-400 hover:underline text-sm"
           >
-            ← Back to Teams
+            Back to Teams
           </Link>
         </div>
       </div>
@@ -292,12 +295,12 @@ export default function TeamDetailPage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Team Members ({members.length})</h2>
           {isAdmin && (
-            <button
+            <Button
               onClick={() => setIsAddingMembers(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="  px-4 py-2 rounded-md text-sm font-medium"
             >
               Add Members
-            </button>
+            </Button>
           )}
         </div>
 

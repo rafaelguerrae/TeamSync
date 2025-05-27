@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
 import { LogoText } from "@/components/ui/logo";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Home, UserCircle, Users, PlusCircle, LogOut, Menu } from "lucide-react";
 
 interface NavItemProps {
@@ -153,8 +154,10 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-pulse text-lg">Loading...</div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="animate-pulse">
+          <LogoText size="large" />
+        </div>
       </div>
     );
   }
@@ -220,14 +223,7 @@ export default function DashboardLayout({
             isMinimized={isMinimized}
             icon={<Users className="h-5 w-5" />}
           >
-            My Teams
-          </NavItem>
-          <NavItem 
-            href="/dashboard/teams/create" 
-            isMinimized={isMinimized}
-            icon={<PlusCircle className="h-5 w-5" />}
-          >
-            Create Team
+            Teams
           </NavItem>
           
           <div className={cn(
@@ -270,7 +266,13 @@ export default function DashboardLayout({
             <LogoText size="small" />
           </div>
         )}
-        <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
+        
+        <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 relative">
+          {/* Theme Toggle Button - positioned above content */}
+          <div className="absolute top-4 right-4 z-10">
+            <ModeToggle />
+          </div>
+          
           {children}
         </div>
       </div>

@@ -2,40 +2,67 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/social-icons";
 import { Calendar, CheckCircle, Clock, Globe, Users, Zap, LogIn, UserPlus } from "lucide-react";
 import { LogoText } from "@/components/ui/logo";
 import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
 
 export default function LandingPage() {
-  const [animatedWord, setAnimatedWord] = useState("Collaboration");
-  const [fadeState, setFadeState] = useState("in");
+  const router = useRouter();
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
   
   const words = ["Collaboration", "Communication", "Planning", "Management"];
   
+  // Function to handle Sign In button click
+  const handleSignInClick = () => {
+    // Check if user is already authenticated
+    if (api.auth.hasValidAccessToken()) {
+      // User is logged in, redirect to dashboard
+      router.push("/dashboard");
+    } else {
+      // User is not logged in, redirect to sign in page
+      router.push("/signin");
+    }
+  };
+  
   useEffect(() => {
-    let currentIndex = 0;
-    let timer = null;
+    let timeout: NodeJS.Timeout;
     
-    const changeWord = () => {
-      setFadeState("out");
-      
-      setTimeout(() => {
-        currentIndex = (currentIndex + 1) % words.length;
-        setAnimatedWord(words[currentIndex]);
-        setFadeState("in");
-      }, 500);
-    };
+    const currentWord = words[currentWordIndex];
     
-    const interval = setInterval(changeWord, 3000);
+    if (isTyping) {
+      // Typing animation
+      if (displayedText.length < currentWord.length) {
+        timeout = setTimeout(() => {
+          setDisplayedText(currentWord.slice(0, displayedText.length + 1));
+        }, 100); // Typing speed
+      } else {
+        // Finished typing, wait then start erasing
+        timeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 2000); // Pause before erasing
+      }
+    } else {
+      // Erasing animation
+      if (displayedText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayedText(displayedText.slice(0, -1));
+        }, 50); // Erasing speed (faster than typing)
+      } else {
+        // Finished erasing, move to next word
+        setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+        setIsTyping(true);
+      }
+    }
     
-    return () => {
-      clearInterval(interval);
-      if (timer) clearTimeout(timer);
-    };
-  }, []);
+    return () => clearTimeout(timeout);
+  }, [displayedText, currentWordIndex, isTyping, words]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -55,9 +82,13 @@ export default function LandingPage() {
           </div>
           
           <div className="flex items-center gap-3">
-            <Link href="/signin" className="hidden md:block">
-              <Button variant="outline">Sign In</Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              onClick={handleSignInClick}
+              className="hidden md:block"
+            >
+              Sign In
+            </Button>
             <Link href="/signup">
               <Button className="text-white">Sign Up</Button>
             </Link>
@@ -72,9 +103,12 @@ export default function LandingPage() {
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground leading-tight">
               Team <span 
-                className={`text-primary transition-opacity duration-500 ${fadeState === 'in' ? 'opacity-100' : 'opacity-0'}`}
+                className="text-primary"
                 style={{ minWidth: '240px', display: 'inline-block' }}
-              >{animatedWord}</span>
+              >
+                {displayedText}
+                <span className="animate-pulse text-primary">|</span>
+              </span>
               <br />
               <span className="block mt-2">made simple</span>
             </h1>
@@ -193,14 +227,14 @@ export default function LandingPage() {
               </div>
             </div>
             
-            <div className="flex-1 order-first md:order-last border rounded-lg p-4 bg-card">
-              <Image
-                src="/teamsync.png"
-                alt="TeamSync workflow preview"
-                width={350}
-                height={350}
-                className="w-full h-auto rounded object-cover"
-              />
+                          <div className="flex-1 order-first md:order-last border rounded-lg p-4 bg-card">
+                <Image
+                  src="/dashboard.png"
+                  alt="TeamSync workflow preview"
+                  width={838}
+                  height={1080}
+                  className="max-w-md mx-auto h-auto rounded object-contain"
+                />
             </div>
           </div>
         </div>
@@ -302,7 +336,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t mt-auto">
+      <footer className="py-8 border-t mt-auto">
         <div className="container mx-auto px-4">
           <div className="mb-8 flex justify-center">
             <div className="justify-center">
@@ -329,8 +363,8 @@ export default function LandingPage() {
             </div>
           </div>
           
-          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Rafael Guerra. All rights reserved.</p>
+          <div className="pt-8 text-center text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} Rafael Guerra.</p>
           </div>
         </div>
       </footer>
