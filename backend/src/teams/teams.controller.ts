@@ -42,6 +42,27 @@ export class TeamsController {
     return await this.teamsService.findAll();
   }
 
+  @Get('alias/:alias')
+  @ApiOperation({ summary: 'Get a team by alias' })
+  @ApiParam({ name: 'alias', type: String })
+  @ApiResponse({ status: 200, description: 'Team found.' })
+  @ApiResponse({ status: 404, description: 'Team not found.' })
+  @ApiResponse({ status: 403, description: 'Access denied - not a member of this team.' })
+  async findByAlias(@Param('alias') alias: string, @Req() request: Request) {
+    const requestingUserId = Number(request.user.sub);
+    return await this.teamsService.findByAliasWithMembershipCheck(alias, requestingUserId);
+  }
+
+  @Get('alias/:alias/members')
+  @ApiOperation({ summary: 'List users in a team by alias' })
+  @ApiParam({ name: 'alias', type: String })
+  @ApiResponse({ status: 200, description: 'Team memberships.' })
+  @ApiResponse({ status: 403, description: 'Access denied - not a member of this team.' })
+  async getTeamUsersByAlias(@Param('alias') alias: string, @Req() request: Request) {
+    const requestingUserId = Number(request.user.sub);
+    return await this.teamsService.getTeamUsersByAliasWithMembershipCheck(alias, requestingUserId);
+  }
+
   @Get(':teamId')
   @ApiOperation({ summary: 'Get a team by ID' })
   @ApiParam({ name: 'teamId', type: Number })

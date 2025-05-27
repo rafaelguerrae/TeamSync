@@ -4,6 +4,7 @@ import { useState, FormEvent, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import CreateTeamLoading from './loading';
+import { Button } from '@/components/ui/button';
 
 // Main component with Suspense
 export default function CreateTeamPage() {
@@ -82,16 +83,16 @@ function CreateTeamContent() {
     <div>
       <h1 className="text-2xl font-bold mb-6">Create New Team</h1>
       
-      <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+      <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
         <div className="flex items-start">
-          <svg className="h-5 w-5 text-blue-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="h-5 w-5 text-green-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
           <div>
-            <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
+            <h3 className="text-sm font-medium text-green-800 dark:text-green-300">
               Team Creator Benefits
             </h3>
-            <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">
+            <p className="mt-1 text-sm text-green-700 dark:text-green-400">
               As the team creator, you will automatically be added as an administrator with full permissions to manage the team, add members, and modify team settings.
             </p>
           </div>
@@ -166,20 +167,24 @@ function CreateTeamContent() {
         </div>
         
         <div className="flex justify-end space-x-3">
-          <button
+          <Button
             type="button"
+            size="lg"
+            variant="outline"
             onClick={() => router.push('/dashboard/teams')}
             className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+
+          <Button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            size="lg"
           >
             {loading ? 'Creating...' : 'Create Team'}
-          </button>
+          </Button>
+
         </div>
       </form>
     </div>

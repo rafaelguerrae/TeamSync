@@ -237,4 +237,51 @@ export class TeamsService {
       },
     });
   }
+
+  async findByAliasWithMembershipCheck(alias: string, requestingUserId: number) {
+    const team = await this.prisma.team.findUnique({
+      where: { alias },
+      select: {
+        id: true,
+        alias: true,
+        name: true,
+        description: true,
+        image: true,
+      },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team with alias ${alias} not found`);
+    }
+
+    // Check if the requesting user is a member of this team
+    const isMember = await this.isUserMemberOfTeam(requestingUserId, team.id);
+    if (!isMember) {
+      throw new ForbiddenException('You can only access information of teams you are a member of');
+    }
+
+    return team;
+  }
+
+  async getTeamUsersByAliasWithMembershipCheck(alias: string, requestingUserId: number) {
+    // First get the team by alias to get the team ID
+    const team = await this.findByAliasWithMembershipCheck(alias, requestingUserId);
+    
+    // Now get the team members using the team ID
+    return this.prisma.userOnTeam.findMany({
+      where: { teamId: team.id },
+      select: {
+        role: true,
+        joinedAt: true,
+        user: {
+          select: {
+            id: true,
+            alias: true,
+            email: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+  }
 }

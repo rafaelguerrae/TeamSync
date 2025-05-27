@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-toastify/dist/ReactToastify.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -168,4 +169,68 @@ nextjs-portal {
 
 .dark .cta-gradient {
   background: linear-gradient(135deg, oklch(0.25 0.08 145) 0%, oklch(0.3 0.1 145) 50%, oklch(0.35 0.12 145) 100%);
+}
+
+/* Custom Toast Styles */
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast {
+  border-radius: var(--radius);
+  font-family: var(--font-inter);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.Toastify__toast--success {
+  background: oklch(0.57 0.15 145);
+  color: oklch(0.985 0 0);
+}
+
+.Toastify__toast--error {
+  background: oklch(0.577 0.245 27.325);
+  color: oklch(0.985 0 0);
+}
+
+.Toastify__toast--warning {
+  background: oklch(0.7 0.15 60);
+  color: oklch(0.985 0 0);
+}
+
+.Toastify__toast--info {
+  background: oklch(0.6 0.15 220);
+  color: oklch(0.985 0 0);
+}
+
+.dark .Toastify__toast--success {
+  background: oklch(0.65 0.2 145);
+  color: oklch(0.985 0 0);
+}
+
+.dark .Toastify__toast--error {
+  background: oklch(0.704 0.191 22.216);
+  color: oklch(0.985 0 0);
+}
+
+.dark .Toastify__toast--warning {
+  background: oklch(0.75 0.18 60);
+  color: oklch(0.985 0 0);
+}
+
+.dark .Toastify__toast--info {
+  background: oklch(0.65 0.18 220);
+  color: oklch(0.985 0 0);
+}
+
+.Toastify__progress-bar {
+  background: oklch(0.985 0 0 / 0.3);
+}
+
+.Toastify__close-button {
+  color: oklch(0.985 0 0);
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
 }

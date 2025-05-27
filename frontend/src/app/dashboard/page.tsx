@@ -7,6 +7,7 @@ import { User } from '@/lib/api';
 import DashboardLoading from './loading';
 import { PlusCircle, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TeamCard } from '@/components/TeamCard';
 import Image from 'next/image';
 // Component that fetches data and can be wrapped in Suspense
 function DashboardContent() {
@@ -58,10 +59,9 @@ function DashboardContent() {
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Welcome back, {user?.name || user?.alias || user?.email}
-        </p>
+        <h1 className="text-xl md:text-2xl font-bold">
+          Welcome, <span className="text-primary">{ "@" + user?.alias}</span>
+        </h1>
       </div>
 
       {/* User Profile Summary */}
@@ -119,41 +119,11 @@ function DashboardContent() {
         ) : (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {teams.map((membership) => (
-              <div 
+              <TeamCard 
                 key={membership.team.id} 
-                className="bg-card dark:bg-gray-900 border dark:border-gray-800 rounded-lg shadow-sm p-4"
-              >
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="h-10 w-10 rounded-md overflow-hidden bg-primary/10 dark:bg-gray-800">
-                    {membership.team.image && (
-                      <img 
-                        src={membership.team.image} 
-                        alt={membership.team.name} 
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{membership.team.name}</h3>
-                    {membership.team.alias && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">@{membership.team.alias}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  {membership.team.description || 'No description'}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs bg-primary/10 text-primary dark:bg-gray-800 dark:text-primary px-2 py-1 rounded">
-                    {membership.role}
-                  </span>
-                  <Button variant="link" size="sm" className="text-primary dark:text-primary p-0" asChild>
-                    <Link href={`/dashboard/teams/${membership.team.id}`}>
-                      View →
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+                membership={membership} 
+                variant="compact"
+              />
             ))}
           </div>
         )}

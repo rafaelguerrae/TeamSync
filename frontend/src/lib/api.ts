@@ -336,6 +336,9 @@ export const api = {
     getOne: (teamId: number) => 
       request<Team>(`/teams/${teamId}`),
       
+    getByAlias: (alias: string) => 
+      request<Team>(`/teams/alias/${alias}`),
+      
     create: (teamData: Omit<Team, 'id'>) => 
       request<Team>('/teams', {
         method: 'POST',
@@ -357,6 +360,9 @@ export const api = {
     members: {
       getAll: (teamId: number) => 
         request<TeamMember[]>(`/teams/${teamId}/members`),
+
+      getAllByAlias: (alias: string) => 
+        request<TeamMember[]>(`/teams/alias/${alias}/members`),
         
       add: (teamId: number, userId: number, role: string) => 
         request<{ userId: number; teamId: number; role: string }>(`/teams/${teamId}/members`, {

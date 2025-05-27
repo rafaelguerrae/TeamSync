@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { TeamMembership } from '@/lib/api';
 import { api } from '@/lib/api';
 import TeamsLoading from './loading';
-import { useRouter } from 'next/navigation';
+import { TeamCard } from '@/components/TeamCard';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
 // Component that fetches data and can be wrapped in Suspense
 function TeamsContent() { 
   const [teams, setTeams] = useState<TeamMembership[]>([]);
@@ -59,12 +61,15 @@ function TeamsContent() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">My Teams</h1>
+        <Button size="sm" asChild>
         <Link 
           href="/dashboard/teams/create" 
-          className="text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="text-sm font-medium px-4 py-2 rounded-md"
         >
+          <PlusCircle className="mr-1 h-4 w-4" />
           Create New Team
         </Link>
+        </Button>
       </div>
 
       {teams.length === 0 ? (
@@ -73,12 +78,14 @@ function TeamsContent() {
           <p className="text-gray-500 dark:text-gray-400 mb-6">
             Create your first team to start collaborating with others
           </p>
+          <Button size="sm" asChild>
           <Link 
             href="/dashboard/teams/create" 
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 text-white rounded-md"
           >
             Create a Team
           </Link>
+          </Button>
         </div>
       ) : (
         <>
@@ -111,61 +118,7 @@ function TeamsContent() {
   );
 }
 
-interface TeamCardProps {
-  membership: TeamMembership;
-}
 
-function TeamCard({ membership }: TeamCardProps) {
-  const { team, role, joinedAt } = membership;
-  const joinDate = new Date(joinedAt).toLocaleDateString();
-  const router = useRouter();
-  
-  const handleViewTeam = () => {
-    // Store team ID in sessionStorage before navigation
-    sessionStorage.setItem('currentTeamId', team.id.toString());
-    router.push('/dashboard/teams/details');
-  };
-  
-  return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
-      <div className="h-32 bg-gray-200 dark:bg-gray-700 relative">
-        {team.image && (
-          <img 
-            src={team.image} 
-            alt={team.name} 
-            className="h-full w-full object-cover"
-          />
-        )}
-        <div className="absolute bottom-3 left-4">
-          <span className="text-xs bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 px-2 py-1 rounded font-medium">
-            {role}
-          </span>
-        </div>
-      </div>
-      
-      <div className="p-4">
-        <h3 className="text-lg font-medium">{team.name}</h3>
-        {team.alias && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">@{team.alias}</p>
-        )}
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-          {team.description || 'No description provided'}
-        </p>
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            Joined {joinDate}
-          </span>
-          <button 
-            onClick={handleViewTeam}
-            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:underline"
-          >
-            View Details
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // Main component that uses Suspense
 export default function TeamsPage() {
